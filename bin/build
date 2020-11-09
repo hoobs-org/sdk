@@ -1,0 +1,113 @@
+#!/usr/bin/env node
+
+/**************************************************************************************************
+ * hoobs-sdk                                                                                      *
+ * Copyright (C) 2020 HOOBS                                                                       *
+ *                                                                                                *
+ * This program is free software: you can redistribute it and/or modify                           *
+ * it under the terms of the GNU General Public License as published by                           *
+ * the Free Software Foundation, either version 3 of the License, or                              *
+ * (at your option) any later version.                                                            *
+ *                                                                                                *
+ * This program is distributed in the hope that it will be useful,                                *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                                 *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                  *
+ * GNU General Public License for more details.                                                   *
+ *                                                                                                *
+ * You should have received a copy of the GNU General Public License                              *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
+ **************************************************************************************************/
+
+const Program = require("commander");
+const Inquirer = require("inquirer");
+
+const { existsSync, mkdirSync, realpathSync, readFileSync } = require("fs-extra");
+const { join, dirname } = require("path");
+const { execSync } = require("child_process");
+
+const root = join(dirname(realpathSync(__filename)), "../");
+const pjson = JSON.parse(readFileSync(join(root, "package.json")).toString());
+
+const prompt = Inquirer.createPromptModule();
+
+Program.version(pjson.version, "-v, --version", "output the current version")
+    .allowUnknownOption();
+
+Program.command("sdk", { isDefault: true })
+    .description("build hoobs sdk")
+    .option("-l, --lint", "lint the code before building")
+    .option("-p, --pack", "create pack file for offline testing")
+    .action((command) => {
+        if (command.lint) {
+            execSync(`${join(root, "node_modules", ".bin", "eslint")} 'src/**/*.ts'`, {
+                cwd: root,
+                stdio: "inherit",
+            });
+        }
+
+        if (!existsSync(join(root, "lib"))) {
+            mkdirSync(join(root, "lib"));
+        }
+
+        execSync(`${join(root, "node_modules", ".bin", "rimraf")} ${join(root, "lib")}`, {
+            cwd: root,
+            stdio: "inherit",
+        });
+        
+        execSync(`${join(root, "node_modules", ".bin", "tsc")}`, {
+            cwd: root,
+            stdio: "inherit",
+        });
+
+        if (command.pack) {
+            execSync("npm pack", {
+                cwd: root,
+                stdio: "inherit",
+            });
+
+            execSync(`mv ${join(root, `hoobs-sdk-${pjson.version}.tgz`)} ${join(root, "lib", "package.tgz")}`, {
+                cwd: root,
+                stdio: "inherit",
+            });
+
+            execSync(`chmod 755 ${join(root, "lib", "package.tgz")}`, {
+                cwd: root,
+                stdio: "inherit",
+            });
+        }
+
+        if (process.env.SUDO_USER && process.env.SUDO_USER !== process.env.USER) {
+            execSync(`chown -R ${process.env.SUDO_USER} ${join(root, "lib")}`, {
+                cwd: root,
+                stdio: "inherit",
+            });
+        }
+    });
+
+Program.command("publish")
+    .description("publish the sdk to npm")
+    .action(() => {
+        prompt([
+            {
+                type: "confirm",
+                name: "confirm",
+                default: false,
+                message: "Are you sure you want to publish",
+                format: (value) => value.toLowerCase(),
+            },
+        ]).then((result) => {
+            if (result && result.confirm) {
+                execSync(`${join(root, "bin", "build")} sdk`, {
+                    cwd: root,
+                    stdio: ["inherit", "inherit", "inherit"],
+                });
+
+                execSync("npm publish --access public", {
+                    cwd: root,
+                    stdio: ["inherit", "inherit", "inherit"],
+                });
+            }
+        });
+    });
+
+Program.parse(process.argv);

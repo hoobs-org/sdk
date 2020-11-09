@@ -1,0 +1,133 @@
+/**************************************************************************************************
+ * hoobs-sdk                                                                                      *
+ * Copyright (C) 2020 HOOBS                                                                       *
+ *                                                                                                *
+ * This program is free software: you can redistribute it and/or modify                           *
+ * it under the terms of the GNU General Public License as published by                           *
+ * the Free Software Foundation, either version 3 of the License, or                              *
+ * (at your option) any later version.                                                            *
+ *                                                                                                *
+ * This program is distributed in the hope that it will be useful,                                *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                                 *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                  *
+ * GNU General Public License for more details.                                                   *
+ *                                                                                                *
+ * You should have received a copy of the GNU General Public License                              *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
+ **************************************************************************************************/
+
+import Request from "axios";
+import Config from "./config";
+import { Wait } from "./wait";
+
+const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
+
+export interface InputTheme {
+    background: string;
+    accent: string;
+}
+
+export interface TextTheme {
+    default: string;
+    highlight?: string;
+    active?: string;
+    input?: string;
+    error?: string;
+}
+
+export interface ApplicationTheme {
+    text: TextTheme;
+    background: string;
+    highlight: string;
+    accent: string;
+    dark: string;
+    drawer: string;
+    input: InputTheme;
+    border: string;
+}
+
+export interface ButtonTheme {
+    background: string;
+    text: string;
+    border: string;
+    primary?: ButtonTheme;
+    light?: ButtonTheme;
+}
+
+export interface ModalTheme {
+    text: TextTheme;
+    background: string;
+    dark: string;
+    form: string;
+    mask: string;
+    highlight: string;
+    input: string;
+    accent: string;
+    border: string;
+}
+
+export interface WidgetTheme {
+    text: TextTheme;
+    background: string;
+    highlight: string;
+    border: string;
+}
+
+export interface MenuTheme {
+    text: TextTheme;
+    background: string;
+    highlight: string;
+    border: string;
+}
+
+export interface NavigationTheme {
+    text: TextTheme;
+    background: string;
+    highlight: string;
+    border: string;
+}
+
+export interface ElevationTheme {
+    default: string;
+    button: string;
+}
+
+export interface Theme {
+    name: string;
+    display: string;
+    auto?: boolean;
+    mode: string;
+    transparency: string;
+    application: ApplicationTheme;
+    button: ButtonTheme;
+    modal: ModalTheme;
+    widget: WidgetTheme;
+    menu: MenuTheme;
+    navigation: NavigationTheme;
+    splash: string;
+    elevation: ElevationTheme;
+}
+
+export const Themes = {
+    async get(name: string): Promise<Theme> {
+        await Wait();
+
+        return (await Request.get(`${API_URL}/theme/${name}`, { headers: { authorization: Config.token.authorization } })).data;
+    },
+
+    async save(name: string, theme: Theme) {
+        await Wait();
+
+        (await Request.post(`${API_URL}/theme/${name}`, theme, { headers: { authorization: Config.token.authorization } }));
+    },
+
+    async backdrop(image: Blob): Promise<string> {
+        await Wait();
+
+        const form = new FormData();
+
+        form.append("file", image);
+
+        return (await Request.post(`${API_URL}/themes/backdrop`, form, { headers: { authorization: Config.token.authorization } })).data.filename;
+    },
+};

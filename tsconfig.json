@@ -1,0 +1,29 @@
+{
+    "extends": "@tsconfig/node10/tsconfig.json",
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "lib": [
+            "esnext",
+            "dom",
+            "dom.iterable",
+            "scripthost"
+        ],
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "outDir": "./lib",
+        "rootDir": "./src",
+        "strict": true,
+        "esModuleInterop": true,
+        "preserveConstEnums": true,
+        "moduleResolution": "node"
+    },
+    "include": [
+        "src/"
+    ],
+    "exclude": [
+        "**/*.test.js",
+        "node_modules"
+    ]
+}
