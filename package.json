@@ -1,6 +1,6 @@
 {
     "name": "@hoobs/sdk",
-    "version": "4.0.1",
+    "version": "4.0.0",
     "description": "HOOBS SDK for building applications that talk with the HOOBS API.",
     "license": "GPL-3.0",
     "keywords": [
@@ -27,7 +27,8 @@
         "node": ">=10.17.0"
     },
     "scripts": {
-        "build": "bin/build --lint --pack"
+        "build": "bin/build --lint --pack",
+        "release": "bin/build publish"
     },
     "dependencies": {
         "axios": "^0.21.0",
