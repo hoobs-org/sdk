@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
  **************************************************************************************************/
 
-import Chunk from "./chunk";
-import Sanitize from "./sanitize";
 import Auth from "./auth";
 import User from "./user";
 import Config from "./config";
@@ -34,22 +32,11 @@ import Location from "./location";
 import Weather from "./weather";
 import Remote from "./remote";
 
-import { Themes, Theme } from "./theme";
-import { Instances, InstanceRecord } from "./instances";
-import { Log, LogLevel, Message } from "./log";
-import { Users, UserRecord } from "./users";
+import { Themes } from "./theme";
+import { Instances } from "./instances";
+import { Log } from "./log";
+import { Users } from "./users";
 import { Version, Latest } from "./version";
-import { Wait, Sleep } from "./wait";
-
-export { LogLevel };
-export { Message };
-export { InstanceRecord };
-export { UserRecord };
-export { Theme };
-export { Sanitize };
-export { Chunk };
-export { Sleep };
-export { Wait };
 
 export default function SDK() {
     return {
