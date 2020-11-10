@@ -57,7 +57,7 @@ export const Instances = {
         return (await Request.get(`${API_URL}/instances`, { headers: { authorization: Config.token.authorization } })).data;
     },
 
-    async add(name: string, port: number): Promise<boolean> {
+    async add(name: string, port: number, pin?: string, username?: string): Promise<boolean> {
         await Wait();
 
         const current = (await Request.get(`${API_URL}/instances`, { headers: { authorization: Config.token.authorization } })).data || [];
@@ -67,7 +67,12 @@ export const Instances = {
         if (current.findIndex((n: any) => n.port === port) >= 0) return false;
         if (current.findIndex((n: any) => n.id === Sanitize(name)) >= 0) return false;
 
-        const results = (await Request.put(`${API_URL}/instances`, { name, port }, { headers: { authorization: Config.token.authorization } })).data || [];
+        const results = (await Request.put(`${API_URL}/instances`, {
+            name,
+            port,
+            pin,
+            username,
+        }, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (results.findIndex((n: any) => n.id === Sanitize(name)) >= 0) return true;
 

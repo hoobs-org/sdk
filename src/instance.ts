@@ -81,10 +81,29 @@ export default async function Instance(name: string): Promise<InstanceRecord | u
         },
     };
 
-    results.rename = async (value: string): Promise<void> => {
+    results.update = async (display: string, autostart: number, pin?: string, username?: string): Promise<void> => {
         await Wait();
 
-        (await Request.post(`${API_URL}/instance/${id}`, { name: value }, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${API_URL}/instance/${id}`, {
+            display,
+            autostart,
+            pin,
+            username,
+        }, { headers: { authorization: Config.token.authorization } }));
+    };
+
+    results.ports = async (start: number, end: number): Promise<boolean> => {
+        if (!start || Number.isNaN(start)) return false;
+        if (start < 1 || start > 65535) return false;
+
+        if (!end || Number.isNaN(end)) return false;
+        if (end < 1 || end > 65535) return false;
+
+        if (end > start) return false;
+
+        (await Request.post(`${API_URL}/instance/${id}/ports`, { start, end }, { headers: { authorization: Config.token.authorization } }));
+
+        return true;
     };
 
     results.accessories = async (): Promise<{ [key: string]: any }[]> => {
