@@ -28,6 +28,10 @@ export interface InstanceRecord {
     type: string;
     display: string;
     port: number;
+    pin?: string;
+    username?: string;
+    ports?: { [key: string]: number};
+    autostart?: number;
     host?: string;
     service?: string;
     status?: () => Promise<{ [key: string]: any }>;
