@@ -23,6 +23,7 @@ import { Wait } from "./wait";
 import { InstanceRecord } from "./instances";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
+const BACKUPS_URL = process.env.BACKUPS_URL || process.env.VUE_APP_BACKUPS || "/backups";
 
 export default async function Instance(name: string): Promise<InstanceRecord | undefined> {
     await Wait();
@@ -140,6 +141,14 @@ export default async function Instance(name: string): Promise<InstanceRecord | u
         await Wait();
 
         return (await Request.get(`${API_URL}/cache/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+    };
+
+    results.export = async (): Promise<string> => {
+        await Wait();
+
+        const { filename } = (await Request.get(`${API_URL}/instance/${id}/export`, { headers: { authorization: Config.token.authorization } })).data;
+
+        return `${BACKUPS_URL}/${filename}`;
     };
 
     results.remove = async (): Promise<boolean> => {
