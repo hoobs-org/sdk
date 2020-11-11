@@ -82,4 +82,19 @@ export const Instances = {
 
         return false;
     },
+
+    async import(file: Blob, name: string, port: number, pin?: string, username?: string): Promise<void> {
+        await Wait();
+
+        const form = new FormData();
+
+        form.append("file", file);
+        form.append("name", name);
+        form.append("port", `${port}`);
+
+        if (pin && pin !== "") form.append("pin", pin);
+        if (username && username !== "") form.append("username", username);
+
+        (await Request.post(`${API_URL}/instances/import`, form, { headers: { authorization: Config.token.authorization } }));
+    },
 };
