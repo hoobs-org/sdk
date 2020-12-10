@@ -20,12 +20,11 @@
 
 const Program = require("commander");
 const Inquirer = require("inquirer");
-
-const { existsSync, mkdirSync, realpathSync, readFileSync } = require("fs-extra");
-const { join, dirname } = require("path");
+const { existsSync, mkdirSync, readFileSync } = require("fs-extra");
+const { join } = require("path");
 const { execSync } = require("child_process");
 
-const root = join(dirname(realpathSync(__filename)), "../");
+const root = join(__dirname, "../");
 const pjson = JSON.parse(readFileSync(join(root, "package.json")).toString());
 
 const prompt = Inquirer.createPromptModule();
