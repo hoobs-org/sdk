@@ -17,6 +17,7 @@
  **************************************************************************************************/
 
 import Request from "axios";
+import Status from "./status";
 import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
@@ -28,5 +29,7 @@ export async function Version(): Promise<string> {
 }
 
 export async function Latest(): Promise<string> {
-    return (((await Request.get("https://api.github.com/repos/hoobs-org/HOOBS/releases/latest")).data || {}).tag_name || "").replace(/v/gi, "");
+    await Wait();
+
+    return (await Status()).release;
 }
