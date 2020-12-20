@@ -31,5 +31,5 @@ export async function Version(): Promise<string> {
 export async function Latest(): Promise<string> {
     await Wait();
 
-    return (await Status()).release;
+    return (await Status()).current;
 }

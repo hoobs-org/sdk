@@ -20,9 +20,15 @@
 
 const Program = require("commander");
 const Inquirer = require("inquirer");
-const { existsSync, mkdirSync, readFileSync } = require("fs-extra");
 const { join } = require("path");
 const { execSync } = require("child_process");
+
+const {
+    existsSync,
+    mkdirSync,
+    readFileSync,
+    unlinkSync,
+} = require("fs-extra");
 
 const root = join(__dirname, "../");
 const pjson = JSON.parse(readFileSync(join(root, "package.json")).toString());
@@ -64,19 +70,9 @@ Program.command("sdk", { isDefault: true })
                 stdio: "inherit",
             });
 
-            execSync(`mv ${join(root, `hoobs-sdk-v${pjson.version}.tgz`)} ${join(root, "lib", "package.tgz")}`, {
-                cwd: root,
-                stdio: "inherit",
-            });
+            if (existsSync(join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`))) unlinkSync(join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`))
 
-            execSync(`chmod 755 ${join(root, "lib", "package.tgz")}`, {
-                cwd: root,
-                stdio: "inherit",
-            });
-        }
-
-        if (process.env.SUDO_USER && process.env.SUDO_USER !== process.env.USER) {
-            execSync(`chown -R ${process.env.SUDO_USER} ${join(root, "lib")}`, {
+            execSync(`mv ${join(root, `hoobs-sdk-v${pjson.version}.tgz`)} ${join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`)}`, {
                 cwd: root,
                 stdio: "inherit",
             });
