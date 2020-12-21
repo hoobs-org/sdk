@@ -16,56 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
  **************************************************************************************************/
 
-import Auth from "./auth";
-import User from "./user";
+import Request from "axios";
 import Config from "./config";
-import Status from "./status";
-import Backup from "./backup";
-import Restore from "./restore";
-import System from "./system";
-import Hostname from "./hostname";
-import Extentions from "./extentions";
-import Plugins from "./plugins";
-import Instance from "./instance";
-import Accessories from "./accessories";
-import Accessory from "./accessory";
-import Location from "./location";
-import Weather from "./weather";
-import Remote from "./remote";
+import { Wait } from "./wait";
 
-import { Themes } from "./theme";
-import { Instances } from "./instances";
-import { Log } from "./log";
-import { Users } from "./users";
-import { Version, Latest } from "./version";
+const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
-export default function SDK() {
-    return {
-        version: Version,
-        latest: Latest,
-        auth: Auth,
-        users: Users,
-        user: User,
-        config: Config,
-        log: Log,
-        status: Status,
-        backup: Backup,
-        restore: Restore,
-        system: System,
-        hostname: Hostname,
-        extentions: Extentions,
-        plugins: Plugins,
-        instances: Instances,
-        instance: Instance,
-        accessories: Accessories,
-        accessory: Accessory,
-        theme: Themes,
-        location: Location,
-        weather: Weather,
-        remote: Remote,
+export default {
+    get: async (): Promise<{ [key: string]: any }> => {
+        await Wait();
 
-        mixin() {
-            return { computed: { $hoobs: () => this } };
-        },
-    };
-}
+        return (await Request.get(`${API_URL}/system/hostname`, { headers: { authorization: Config.token.authorization } })).data.hostname;
+    },
+
+    update: async (hostname: string): Promise<void> => {
+        await Wait();
+
+        (await Request.post(`${API_URL}/system/hostname`, { hostname }, { headers: { authorization: Config.token.authorization } }));
+    },
+};
