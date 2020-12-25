@@ -116,19 +116,19 @@ export default async function Instance(name: string): Promise<InstanceRecord | u
     results.start = async (): Promise<void> => {
         await Wait();
 
-        (await Request.get(`${API_URL}/bridge/${id}/start`, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${API_URL}/bridge/${id}/start`, null, { headers: { authorization: Config.token.authorization } }));
     };
 
     results.stop = async (): Promise<void> => {
         await Wait();
 
-        (await Request.get(`${API_URL}/bridge/${id}/stop`, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${API_URL}/bridge/${id}/stop`, null, { headers: { authorization: Config.token.authorization } }));
     };
 
     results.restart = async (): Promise<void> => {
         await Wait();
 
-        (await Request.get(`${API_URL}/bridge/${id}/restart`, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${API_URL}/bridge/${id}/restart`, null, { headers: { authorization: Config.token.authorization } }));
     };
 
     results.purge = async (): Promise<void> => {
