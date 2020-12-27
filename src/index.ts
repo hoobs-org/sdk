@@ -39,33 +39,37 @@ import { Log } from "./log";
 import { Users } from "./users";
 import { Version, Latest } from "./version";
 
-export default function SDK() {
-    return {
-        version: Version,
-        latest: Latest,
-        auth: Auth,
-        users: Users,
-        user: User,
-        config: Config,
-        log: Log,
-        status: Status,
-        backup: Backup,
-        restore: Restore,
-        system: System,
-        hostname: Hostname,
-        extentions: Extentions,
-        plugins: Plugins,
-        instances: Instances,
-        instance: Instance,
-        accessories: Accessories,
-        accessory: Accessory,
-        theme: Themes,
-        location: Location,
-        weather: Weather,
-        remote: Remote,
+export const hoobs = {
+    version: Version,
+    latest: Latest,
+    auth: Auth,
+    users: Users,
+    user: User,
+    config: Config,
+    log: Log,
+    status: Status,
+    backup: Backup,
+    restore: Restore,
+    system: System,
+    hostname: Hostname,
+    extentions: Extentions,
+    plugins: Plugins,
+    instances: Instances,
+    instance: Instance,
+    accessories: Accessories,
+    accessory: Accessory,
+    theme: Themes,
+    location: Location,
+    weather: Weather,
+    remote: Remote,
+};
 
-        mixin() {
-            return { computed: { $hoobs: () => this } };
-        },
-    };
-}
+export const sdk = {
+    install(Vue: any) {
+        Vue.mixin({
+            computed: {
+                $hoobs: () => hoobs,
+            },
+        });
+    },
+};
