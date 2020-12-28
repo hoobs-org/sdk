@@ -22,5 +22,5 @@ export default function Sanitize(value: string, prevent?: string): string {
     if (!value || value === "") return "default";
     if (prevent && prevent !== "" && prevent.toLowerCase() === value.toLowerCase()) return "default";
 
-    return FilenameSafe(value).toLowerCase().replace(/ /gi, "-");
+    return FilenameSafe(value).toLowerCase().replace(/ /gi, "");
 }
