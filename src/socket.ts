@@ -16,67 +16,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
  **************************************************************************************************/
 
-import Auth from "./auth";
-import User from "./user";
-import Config from "./config";
-import Status from "./status";
-import Backup from "./backup";
-import Restore from "./restore";
-import System from "./system";
-import Hostname from "./hostname";
-import Extentions from "./extentions";
-import Plugins from "./plugins";
-import Repository from "./repository";
-import Instance from "./instance";
-import Accessories from "./accessories";
-import Accessory from "./accessory";
-import Location from "./location";
-import Weather from "./weather";
-import Remote from "./remote";
-import Socket from "./socket";
-import Dates from "./dates";
+import io from "socket.io-client";
 
-import { Themes } from "./theme";
-import { Instances } from "./instances";
-import { Log } from "./log";
-import { Users } from "./users";
-import { Version, Latest } from "./version";
+const SOCKET_URL = process.env.VUE_APP_SOCKET || "/";
 
-export const hoobs = {
-    version: Version,
-    latest: Latest,
-    auth: Auth,
-    users: Users,
-    user: User,
-    config: Config,
-    log: Log,
-    status: Status,
-    backup: Backup,
-    restore: Restore,
-    system: System,
-    hostname: Hostname,
-    extentions: Extentions,
-    plugins: Plugins,
-    instances: Instances,
-    instance: Instance,
-    accessories: Accessories,
-    accessory: Accessory,
-    theme: Themes,
-    location: Location,
-    weather: Weather,
-    remote: Remote,
-};
+class Socket {
+    declare private io: any;
 
-export const sdk = {
-    install(Vue: any) {
-        Vue.mixin({
-            computed: {
-                $hoobs: () => hoobs,
-            },
-        });
-    },
-};
+    declare private url: string;
 
-export const repository = Repository;
-export const socket = Socket;
-export const dates = Dates;
+    declare private events: { [key: string]: ((args: any) => any) };
+
+    declare private terminal: boolean;
+
+    constructor() {
+        this.events = {};
+        this.io = io(SOCKET_URL);
+        this.terminal = false;
+    }
+
+    on(event: string, callback: (args: any) => any) {
+        this.off(event);
+        this.events[event] = callback;
+        this.io.on(event, this.events[event]);
+    }
+
+    off(event: string) {
+        this.io.off(event, this.events[event]);
+
+        delete this.events[event];
+    }
+
+    emit(event: string, ...args: any) {
+        if (event === "shell_connect") {
+            if (this.terminal) this.emit("shell_disconnect");
+
+            this.terminal = true;
+        }
+
+        if (event === "shell_disconnect") {
+            if (this.terminal) this.off("shell_output");
+
+            this.terminal = false;
+        }
+
+        this.io.emit(event, args);
+    }
+
+    install(vue: any): void {
+        vue.mixin({ data: () => ({ io: this }) });
+    }
+}
+
+export default function socket(): Socket {
+    return new Socket();
+}
