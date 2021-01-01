@@ -16,70 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
  **************************************************************************************************/
 
-import Auth from "./auth";
-import User from "./user";
+import Request from "axios";
 import Config from "./config";
-import Status from "./status";
-import Backup from "./backup";
-import Restore from "./restore";
-import System from "./system";
-import Hostname from "./hostname";
-import Extentions from "./extentions";
-import Plugin from "./plugin";
-import Plugins from "./plugins";
-import Repository from "./repository";
-import Instance from "./instance";
-import Accessories from "./accessories";
-import Accessory from "./accessory";
-import Location from "./location";
-import Weather from "./weather";
-import Remote from "./remote";
-import Socket from "./socket";
-import Dates from "./dates";
+import { Wait } from "./wait";
 
-import { Themes } from "./theme";
-import { Instances } from "./instances";
-import { Log } from "./log";
-import { Users } from "./users";
-import { Version, Latest } from "./version";
+const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
-const sdk = {
-    version: Version,
-    dates: Dates,
-    latest: Latest,
-    auth: Auth,
-    users: Users,
-    user: User,
-    config: Config,
-    log: Log,
-    status: Status,
-    backup: Backup,
-    restore: Restore,
-    system: System,
-    hostname: Hostname,
-    extentions: Extentions,
-    plugin: Plugin,
-    plugins: Plugins,
-    instances: Instances,
-    instance: Instance,
-    accessories: Accessories,
-    accessory: Accessory,
-    theme: Themes,
-    location: Location,
-    repository: Repository,
-    weather: Weather,
-    remote: Remote,
-    io: Socket,
-};
+export default async function Plugin(instance: string, identifier: string, action?: string, data?: { [key: string]: any }): Promise<{ [key: string]: any }[]> {
+    await Wait();
 
-export default {
-    sdk,
+    data = data || {};
+    data.instance = instance;
 
-    install(Vue: any) {
-        Vue.mixin({
-            computed: {
-                $hoobs: () => sdk,
-            },
-        });
-    },
-};
+    if (action && action !== "") return (await Request.post(`${API_URL}/plugin/${identifier}/${action}`, data || {}, { headers: { authorization: Config.token.authorization } })).data;
+
+    return (await Request.post(`${API_URL}/plugin/${identifier}`, data || {}, { headers: { authorization: Config.token.authorization } })).data;
+}
