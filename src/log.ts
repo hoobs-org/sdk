@@ -31,7 +31,7 @@ export declare const enum LogLevel {
 
 export interface Message {
     level: LogLevel;
-    instance?: string;
+    bridge?: string;
     display?: string;
     timestamp: number;
     plugin?: string;

@@ -20,12 +20,12 @@ import Request from "axios";
 import Config from "./config";
 import Sanitize from "./sanitize";
 import { Wait } from "./wait";
-import { InstanceRecord } from "./instances";
+import { BridgeRecord } from "./bridges";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 const BACKUPS_URL = process.env.BACKUPS_URL || process.env.VUE_APP_BACKUPS || "/backups";
 
-export default async function Instance(name: string): Promise<InstanceRecord | undefined> {
+export default async function Bridge(name: string): Promise<BridgeRecord | undefined> {
     await Wait();
 
     const id = Sanitize(name);
@@ -33,7 +33,7 @@ export default async function Instance(name: string): Promise<InstanceRecord | u
     if (!name || name === "") return undefined;
     if (id === "api") return undefined;
 
-    const current = (await Request.get(`${API_URL}/instances`, { headers: { authorization: Config.token.authorization } })).data || [];
+    const current = (await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
     const index = current.findIndex((n: any) => n.id === id);
 
     if (index === -1) return undefined;
@@ -85,7 +85,7 @@ export default async function Instance(name: string): Promise<InstanceRecord | u
     results.update = async (display: string, autostart: number, pin?: string, username?: string): Promise<void> => {
         await Wait();
 
-        (await Request.post(`${API_URL}/instance/${id}`, {
+        (await Request.post(`${API_URL}/bridge/${id}`, {
             display,
             autostart,
             pin,
@@ -102,7 +102,7 @@ export default async function Instance(name: string): Promise<InstanceRecord | u
 
         if (end > start) return false;
 
-        (await Request.post(`${API_URL}/instance/${id}/ports`, { start, end }, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${API_URL}/bridge/${id}/ports`, { start, end }, { headers: { authorization: Config.token.authorization } }));
 
         return true;
     };
@@ -146,7 +146,7 @@ export default async function Instance(name: string): Promise<InstanceRecord | u
     results.export = async (): Promise<string> => {
         await Wait();
 
-        const { filename } = (await Request.get(`${API_URL}/instance/${id}/export`, { headers: { authorization: Config.token.authorization } })).data;
+        const { filename } = (await Request.get(`${API_URL}/bridge/${id}/export`, { headers: { authorization: Config.token.authorization } })).data;
 
         return `${BACKUPS_URL}/${filename}`;
     };
@@ -154,7 +154,7 @@ export default async function Instance(name: string): Promise<InstanceRecord | u
     results.remove = async (): Promise<boolean> => {
         await Wait();
 
-        const updated = (await Request.delete(`${API_URL}/instance/${id}`, { headers: { authorization: Config.token.authorization } })).data || [];
+        const updated = (await Request.delete(`${API_URL}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (updated.findIndex((n: any) => n.id === id) >= 0) return false;
 

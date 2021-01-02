@@ -22,7 +22,7 @@ First you need to import the SDK
 import SDK from "@hoobs/sdk";
 ```
 
-Then create an instance.
+Then create an bridge.
 ```js
 const hoobs = SDK();
 ```

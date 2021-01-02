@@ -28,7 +28,7 @@ import Extentions from "./extentions";
 import Plugin from "./plugin";
 import Plugins from "./plugins";
 import Repository from "./repository";
-import Instance from "./instance";
+import Bridge from "./bridge";
 import Accessories from "./accessories";
 import Accessory from "./accessory";
 import Location from "./location";
@@ -38,7 +38,7 @@ import Socket from "./socket";
 import Dates from "./dates";
 
 import { Themes } from "./theme";
-import { Instances } from "./instances";
+import { Bridges } from "./bridges";
 import { Log } from "./log";
 import { Users } from "./users";
 import { Version, Latest } from "./version";
@@ -60,8 +60,8 @@ const sdk = {
     extentions: Extentions,
     plugin: Plugin,
     plugins: Plugins,
-    instances: Instances,
-    instance: Instance,
+    bridges: Bridges,
+    bridge: Bridge,
     accessories: Accessories,
     accessory: Accessory,
     theme: Themes,

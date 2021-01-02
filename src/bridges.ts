@@ -23,7 +23,7 @@ import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
-export interface InstanceRecord {
+export interface BridgeRecord {
     id: string;
     type: string;
     display: string;
@@ -48,30 +48,30 @@ export interface InstanceRecord {
     remove?: () => Promise<boolean>;
 }
 
-export const Instances = {
+export const Bridges = {
     async count(): Promise<number> {
         await Wait();
 
-        return (await Request.get(`${API_URL}/instances/count`)).data.instances;
+        return (await Request.get(`${API_URL}/bridges/count`)).data.bridges;
     },
 
-    async list(): Promise<InstanceRecord[]> {
+    async list(): Promise<BridgeRecord[]> {
         await Wait();
 
-        return (await Request.get(`${API_URL}/instances`, { headers: { authorization: Config.token.authorization } })).data;
+        return (await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } })).data;
     },
 
     async add(name: string, port: number, pin?: string, username?: string): Promise<boolean> {
         await Wait();
 
-        const current = (await Request.get(`${API_URL}/instances`, { headers: { authorization: Config.token.authorization } })).data || [];
+        const current = (await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (!port || Number.isNaN(port)) return false;
         if (port < 1 || port > 65535) return false;
         if (current.findIndex((n: any) => n.port === port) >= 0) return false;
         if (current.findIndex((n: any) => n.id === Sanitize(name)) >= 0) return false;
 
-        const results = (await Request.put(`${API_URL}/instances`, {
+        const results = (await Request.put(`${API_URL}/bridges`, {
             name,
             port,
             pin,
@@ -95,6 +95,6 @@ export const Instances = {
         if (pin && pin !== "") form.append("pin", pin);
         if (username && username !== "") form.append("username", username);
 
-        (await Request.post(`${API_URL}/instances/import`, form, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${API_URL}/bridges/import`, form, { headers: { authorization: Config.token.authorization } }));
     },
 };
