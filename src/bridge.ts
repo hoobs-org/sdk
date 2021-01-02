@@ -31,7 +31,7 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
     const id = Sanitize(name);
 
     if (!name || name === "") return undefined;
-    if (id === "api") return undefined;
+    if (id === "hub") return undefined;
 
     const current = (await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
     const index = current.findIndex((n: any) => n.id === id);
