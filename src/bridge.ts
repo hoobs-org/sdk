@@ -60,7 +60,11 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         list: async (): Promise<{ [key: string]: any }[]> => {
             await Wait();
 
-            return (await Request.get(`${API_URL}/plugins/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+            const response = await Request.get(`${API_URL}/plugins/${id}`, { headers: { authorization: Config.token.authorization } });
+
+            if (!Array.isArray(response.data)) return [];
+
+            return response.data || [];
         },
 
         install: async (identifier: string): Promise<void> => {
@@ -110,7 +114,11 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
     results.accessories = async (): Promise<{ [key: string]: any }[]> => {
         await Wait();
 
-        return (await Request.get(`${API_URL}/accessories/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+        const response = await Request.get(`${API_URL}/accessories/${id}`, { headers: { authorization: Config.token.authorization } });
+
+        if (!Array.isArray(response.data)) return [];
+
+        return response.data || [];
     };
 
     results.start = async (): Promise<void> => {

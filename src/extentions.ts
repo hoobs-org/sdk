@@ -26,7 +26,11 @@ export default {
     async list(): Promise<{ [key: string]: any }[]> {
         await Wait();
 
-        return (await Request.get(`${API_URL}/extentions`, { headers: { authorization: Config.token.authorization } })).data;
+        const response = await Request.get(`${API_URL}/extentions`, { headers: { authorization: Config.token.authorization } });
+
+        if (!Array.isArray(response.data)) return [];
+
+        return response.data || [];
     },
 
     async add(name: string): Promise<boolean> {

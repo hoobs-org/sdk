@@ -25,5 +25,9 @@ const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 export default async function Accessories(): Promise<{ [key: string]: any }[]> {
     await Wait();
 
-    return (await Request.get(`${API_URL}/accessories`, { headers: { authorization: Config.token.authorization } })).data;
+    const response = await Request.get(`${API_URL}/accessories`, { headers: { authorization: Config.token.authorization } });
+
+    if (!Array.isArray(response.data)) return [];
+
+    return response.data || [];
 }

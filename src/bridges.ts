@@ -58,7 +58,11 @@ export const Bridges = {
     async list(): Promise<BridgeRecord[]> {
         await Wait();
 
-        return (await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } })).data;
+        const response = await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } });
+
+        if (!Array.isArray(response.data)) return [];
+
+        return response.data || [];
     },
 
     async add(name: string, port: number, pin?: string, username?: string): Promise<boolean> {

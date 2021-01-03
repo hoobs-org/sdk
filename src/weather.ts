@@ -32,6 +32,10 @@ export default {
     async forecast(): Promise<{ [key: string]: any }[]> {
         await Wait();
 
-        return (await Request.get(`${API_URL}/weather/forecast`, { headers: { authorization: Config.token.authorization } })).data;
+        const response = await Request.get(`${API_URL}/weather/forecast`, { headers: { authorization: Config.token.authorization } });
+
+        if (!Array.isArray(response.data)) return [];
+
+        return response.data || [];
     },
 };

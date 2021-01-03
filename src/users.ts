@@ -35,7 +35,11 @@ export const Users = {
     async list(): Promise<UserRecord[]> {
         await Wait();
 
-        return (await Request.get(`${API_URL}/users`, { headers: { authorization: Config.token.authorization } })).data;
+        const response = await Request.get(`${API_URL}/users`, { headers: { authorization: Config.token.authorization } });
+
+        if (!Array.isArray(response.data)) return [];
+
+        return response.data || [];
     },
 
     async add(username: string, password: string, name?: string, permissions?: { [key: string]: boolean }): Promise<UserRecord[]> {

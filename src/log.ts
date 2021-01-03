@@ -42,7 +42,15 @@ export interface Message {
 export async function Log(tail?: number): Promise<Message[]> {
     await Wait();
 
-    if (tail) return (await Request.get(`${API_URL}/log/${tail}`, { headers: { authorization: Config.token.authorization } })).data;
+    let response;
 
-    return (await Request.get(`${API_URL}/log`)).data;
+    if (tail) {
+        response = await Request.get(`${API_URL}/log/${tail}`, { headers: { authorization: Config.token.authorization } });
+    } else {
+        response = await Request.get(`${API_URL}/log`);
+    }
+
+    if (!Array.isArray(response.data)) return [];
+
+    return response.data || [];
 }

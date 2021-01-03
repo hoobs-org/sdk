@@ -32,10 +32,14 @@ export default {
         return `${BACKUPS_URL}/${filename}`;
     },
 
-    async catalog(count?: number): Promise<{ [key: string]: any }> {
+    async catalog(count?: number): Promise<{ [key: string]: any }[]> {
         await Wait();
 
-        const list = ((await Request.get(`${API_URL}/system/backup/catalog`, { headers: { authorization: Config.token.authorization } })).data || []).reverse();
+        const response = await Request.get(`${API_URL}/system/backup/catalog`, { headers: { authorization: Config.token.authorization } });
+
+        if (!Array.isArray(response.data)) return [];
+
+        const list = (response.data || []).reverse();
 
         if ((count || 5) <= 0) return list;
 
