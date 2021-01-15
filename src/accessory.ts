@@ -22,15 +22,21 @@ import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
-export default async function Accessory(bridge: string, aid: string): Promise<{ [key: string]: any }> {
+export default async function Accessory(bridge: string, id: string): Promise<{ [key: string]: any }> {
     await Wait();
 
-    const results = (await Request.get(`${API_URL}/accessory/${bridge}/${aid}`, { headers: { authorization: Config.token.authorization } })).data;
+    const results = (await Request.get(`${API_URL}/accessory/${bridge}/${id}`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.control = async (iid: string, data: { [key: string]: any }): Promise<void> => {
+    results.characteristics = async (): Promise<string[]> => {
         await Wait();
 
-        (await Request.put(`${API_URL}/accessory/${bridge}/${aid}/${iid}`, data, { headers: { authorization: Config.token.authorization } }));
+        return (await Request.get(`${API_URL}/accessory/${bridge}/${id}/characteristics`, { headers: { authorization: Config.token.authorization } })).data;
+    };
+
+    results.control = async (type: string, data: { [key: string]: any }): Promise<void> => {
+        await Wait();
+
+        (await Request.put(`${API_URL}/accessory/${bridge}/${id}/${type}`, data, { headers: { authorization: Config.token.authorization } }));
     };
 
     return results;
