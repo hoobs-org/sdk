@@ -22,21 +22,15 @@ import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
-export default async function Accessory(bridge: string, id: string): Promise<{ [key: string]: any }> {
+export default async function Room(id: string): Promise<{ [key: string]: any }> {
     await Wait();
 
-    const results = (await Request.get(`${API_URL}/accessory/${bridge}/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+    const results = (await Request.get(`${API_URL}/room/${id}`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.characteristics = async (): Promise<string[]> => {
+    results.set = async (characteristic: string, data: any): Promise<void> => {
         await Wait();
 
-        return (await Request.get(`${API_URL}/accessory/${bridge}/${id}/characteristics`, { headers: { authorization: Config.token.authorization } })).data;
-    };
-
-    results.set = async (characteristic: string, data: { [key: string]: any }): Promise<void> => {
-        await Wait();
-
-        (await Request.put(`${API_URL}/accessory/${bridge}/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } }));
+        (await Request.put(`${API_URL}/room/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } }));
     };
 
     return results;

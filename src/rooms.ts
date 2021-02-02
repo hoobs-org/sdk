@@ -18,26 +18,50 @@
 
 import Request from "axios";
 import Config from "./config";
+import Sanitize from "./sanitize";
 import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
-export default async function Accessory(bridge: string, id: string): Promise<{ [key: string]: any }> {
-    await Wait();
-
-    const results = (await Request.get(`${API_URL}/accessory/${bridge}/${id}`, { headers: { authorization: Config.token.authorization } })).data;
-
-    results.characteristics = async (): Promise<string[]> => {
-        await Wait();
-
-        return (await Request.get(`${API_URL}/accessory/${bridge}/${id}/characteristics`, { headers: { authorization: Config.token.authorization } })).data;
-    };
-
-    results.set = async (characteristic: string, data: { [key: string]: any }): Promise<void> => {
-        await Wait();
-
-        (await Request.put(`${API_URL}/accessory/${bridge}/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } }));
-    };
-
-    return results;
+export interface RoomRecord {
+    id: string;
+    name?: string;
+    types: [string];
+    characteristics: [string];
 }
+
+export const Rooms = {
+    async count(): Promise<number> {
+        await Wait();
+
+        const response = await Request.get(`${API_URL}/accessories`, { headers: { authorization: Config.token.authorization } });
+
+        if (!Array.isArray(response.data)) return 0;
+
+        return response.data.length;
+    },
+
+    async list(): Promise<RoomRecord[]> {
+        await Wait();
+
+        const response = await Request.get(`${API_URL}/rooms`, { headers: { authorization: Config.token.authorization } });
+
+        if (!Array.isArray(response.data)) return [];
+
+        return <RoomRecord[]>response.data;
+    },
+
+    async add(name: string, sequence?: number): Promise<boolean> {
+        await Wait();
+
+        const results = (await Request.put(`${API_URL}/room`, {
+            name,
+            sequence: sequence || 0,
+        }, { headers: { authorization: Config.token.authorization } })).data || {};
+
+        if (results.error) return false;
+        if (results.id === Sanitize(name)) return true;
+
+        return false;
+    },
+};

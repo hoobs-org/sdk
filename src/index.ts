@@ -36,9 +36,11 @@ import Weather from "./weather";
 import Remote from "./remote";
 import Socket from "./socket";
 import Dates from "./dates";
+import Room from "./room";
 
 import { Themes } from "./theme";
 import { Bridges } from "./bridges";
+import { Rooms } from "./rooms";
 import { Log } from "./log";
 import { Users } from "./users";
 import { Version, Latest } from "./version";
@@ -64,6 +66,8 @@ const sdk = {
     bridge: Bridge,
     accessories: Accessories,
     accessory: Accessory,
+    rooms: Rooms,
+    room: Room,
     theme: Themes,
     location: Location,
     repository: Repository,
