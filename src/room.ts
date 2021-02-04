@@ -33,5 +33,15 @@ export default async function Room(id: string): Promise<{ [key: string]: any }> 
         (await Request.put(`${API_URL}/room/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } }));
     };
 
+    results.remove = async (): Promise<boolean> => {
+        await Wait();
+
+        const result = (await Request.delete(`${API_URL}/room/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+
+        if (!result || result.error) return false;
+
+        return true;
+    };
+
     return results;
 }
