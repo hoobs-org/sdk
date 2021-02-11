@@ -27,12 +27,6 @@ export default async function Accessory(bridge: string, id: string): Promise<{ [
 
     const results = (await Request.get(`${API_URL}/accessory/${bridge}/${id}`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.characteristics = async (): Promise<string[]> => {
-        await Wait();
-
-        return (await Request.get(`${API_URL}/accessory/${bridge}/${id}/characteristics`, { headers: { authorization: Config.token.authorization } })).data;
-    };
-
     results.set = async (characteristic: string, data: { [key: string]: any }): Promise<void> => {
         await Wait();
 
