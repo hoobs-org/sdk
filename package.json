@@ -1,6 +1,6 @@
 {
     "name": "@hoobs/sdk",
-    "version": "4.2.6",
+    "version": "4.2.7",
     "description": "HOOBS SDK for building applications that talk with the HOOBS API.",
     "license": "GPL-3.0",
     "keywords": [
@@ -31,7 +31,7 @@
         "release": "bin/build publish"
     },
     "dependencies": {
-        "axios": "^0.21.0",
+        "axios": "^0.21.1",
         "sanitize-filename": "^1.6.3",
         "socket.io-client": "^3.0.4"
     },

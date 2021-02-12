@@ -55,6 +55,12 @@ export default {
         return false;
     },
 
+    async link(vendor: string, username: string, password: string, verification?: string) {
+        await Wait();
+
+        return (await Request.post(`${API_URL}/auth/vendor/${vendor}`, { username, password, verification }, { headers: { authorization: Config.token.authorization } })).data;
+    },
+
     async logout(): Promise<void> {
         await Wait();
 
