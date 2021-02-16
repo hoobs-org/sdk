@@ -87,6 +87,14 @@ export interface NavigationTheme {
     border: string;
 }
 
+export interface AccessoryTheme {
+    text: string;
+    background: string;
+    highlight: string;
+    input: string;
+    border: string;
+}
+
 export interface ElevationTheme {
     default: string;
     button: string;
@@ -104,6 +112,7 @@ export interface Theme {
     widget: WidgetTheme;
     menu: MenuTheme;
     navigation: NavigationTheme;
+    accessory: AccessoryTheme;
     splash: string;
     elevation: ElevationTheme;
 }
