@@ -22,10 +22,10 @@ import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
-export default async function Accessories(): Promise<{ [key: string]: any }[]> {
+export default async function Accessories(hidden?: boolean): Promise<{ [key: string]: any }[]> {
     await Wait();
 
-    const response = await Request.get(`${API_URL}/accessories`, { headers: { authorization: Config.token.authorization } });
+    const response = await Request.get(`${API_URL}/${hidden ? "accessories/hidden" : "accessories"}`, { headers: { authorization: Config.token.authorization } });
 
     if (!Array.isArray(response.data)) return [];
 
