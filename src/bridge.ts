@@ -139,16 +139,20 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         (await Request.post(`${API_URL}/bridge/${id}/restart`, null, { headers: { authorization: Config.token.authorization } }));
     };
 
-    results.purge = async (): Promise<void> => {
-        await Wait();
-
-        (await Request.post(`${API_URL}/bridge/${id}/purge`, null, { headers: { authorization: Config.token.authorization } }));
-    };
-
     results.cache = async (): Promise<{ [key: string]: any }> => {
         await Wait();
 
         return (await Request.get(`${API_URL}/cache/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+    };
+
+    results.purge = async (uuid?: string): Promise<void> => {
+        await Wait();
+
+        if (uuid) {
+            (await Request.delete(`${API_URL}/cache/${id}/purge/${uuid}`, { headers: { authorization: Config.token.authorization } }));
+        } else {
+            (await Request.delete(`${API_URL}/cache/${id}/purge`, { headers: { authorization: Config.token.authorization } }));
+        }
     };
 
     results.export = async (): Promise<string> => {
