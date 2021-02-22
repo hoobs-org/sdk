@@ -30,7 +30,7 @@ export interface BridgeRecord {
     port: number;
     pin?: string;
     username?: string;
-    ports?: { [key: string]: number};
+    ports?: { [key: string]: number };
     autostart?: number;
     host?: string;
     service?: string;

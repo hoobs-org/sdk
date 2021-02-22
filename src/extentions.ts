@@ -40,7 +40,7 @@ export default {
 
         const current = (await Request.get(`${API_URL}/extentions`, { headers: { authorization: Config.token.authorization } })).data || [];
 
-        return (current.findIndex((e: { [key: string]: string | boolean}) => e.feature === name && e.enabled) >= 0);
+        return (current.findIndex((e: { [key: string]: string | boolean }) => e.feature === name && e.enabled) >= 0);
     },
 
     async remove(name: string): Promise<boolean> {
@@ -50,6 +50,6 @@ export default {
 
         const current = (await Request.get(`${API_URL}/extentions`, { headers: { authorization: Config.token.authorization } })).data || [];
 
-        return (current.findIndex((e: { [key: string]: string | boolean}) => e.feature === name && e.enabled) === -1);
+        return (current.findIndex((e: { [key: string]: string | boolean }) => e.feature === name && e.enabled) === -1);
     },
 };
