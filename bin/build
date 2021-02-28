@@ -43,39 +43,19 @@ Program.command("sdk", { isDefault: true })
     .option("-l, --lint", "lint the code before building")
     .option("-p, --pack", "create pack file for offline testing")
     .action((command) => {
-        if (command.lint) {
-            execSync(`${join(root, "node_modules", ".bin", "eslint")} 'src/**/*.ts'`, {
-                cwd: root,
-                stdio: "inherit",
-            });
-        }
+        if (command.lint)  execSync(`${join(root, "node_modules", ".bin", "eslint")} 'src/**/*.ts'`, { cwd: root, stdio: "inherit" });
 
-        if (!existsSync(join(root, "lib"))) {
-            mkdirSync(join(root, "lib"));
-        }
+        if (!existsSync(join(root, "lib"))) mkdirSync(join(root, "lib"));
 
-        execSync(`${join(root, "node_modules", ".bin", "rimraf")} ${join(root, "lib")}`, {
-            cwd: root,
-            stdio: "inherit",
-        });
-        
-        execSync(`${join(root, "node_modules", ".bin", "tsc")}`, {
-            cwd: root,
-            stdio: "inherit",
-        });
+        execSync(`${join(root, "node_modules", ".bin", "rimraf")} ${join(root, "lib")}`, { cwd: root, stdio: "inherit" });
+        execSync(`${join(root, "node_modules", ".bin", "tsc")}`, { cwd: root, stdio: "inherit" });
 
         if (command.pack) {
-            execSync("yarn pack", {
-                cwd: root,
-                stdio: "inherit",
-            });
+            execSync("yarn pack", { cwd: root, stdio: "inherit" });
 
             if (existsSync(join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`))) unlinkSync(join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`))
 
-            execSync(`mv ${join(root, `hoobs-sdk-v${pjson.version}.tgz`)} ${join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`)}`, {
-                cwd: root,
-                stdio: "inherit",
-            });
+            execSync(`mv ${join(root, `hoobs-sdk-v${pjson.version}.tgz`)} ${join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`)}`, { cwd: root, stdio: "inherit" });
         }
     });
 
@@ -92,15 +72,8 @@ Program.command("publish")
             },
         ]).then((result) => {
             if (result && result.confirm) {
-                execSync(`${join(root, "bin", "build")} sdk`, {
-                    cwd: root,
-                    stdio: ["inherit", "inherit", "inherit"],
-                });
-
-                execSync("yarn publish --access public", {
-                    cwd: root,
-                    stdio: ["inherit", "inherit", "inherit"],
-                });
+                execSync(`${join(root, "bin", "build")} sdk`, { cwd: root, stdio: ["inherit", "inherit", "inherit"] });
+                execSync("yarn publish --access public", { cwd: root, stdio: ["inherit", "inherit", "inherit"] });
             }
         });
     });
