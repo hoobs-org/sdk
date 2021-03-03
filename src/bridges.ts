@@ -65,7 +65,7 @@ export const Bridges = {
         return response.data || [];
     },
 
-    async add(name: string, port: number, pin?: string, username?: string): Promise<boolean> {
+    async add(name: string, port: number, pin?: string, username?: string, advertiser?: string): Promise<boolean> {
         await Wait();
 
         const current = (await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
@@ -80,6 +80,7 @@ export const Bridges = {
             port,
             pin,
             username,
+            advertiser,
         }, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (results.findIndex((n: any) => n.id === Sanitize(name)) >= 0) return true;
@@ -87,7 +88,7 @@ export const Bridges = {
         return false;
     },
 
-    async import(file: Blob, name: string, port: number, pin?: string, username?: string): Promise<void> {
+    async import(file: Blob, name: string, port: number, pin?: string, username?: string, advertiser?: string): Promise<void> {
         await Wait();
 
         const form = new FormData();
@@ -98,6 +99,7 @@ export const Bridges = {
 
         if (pin && pin !== "") form.append("pin", pin);
         if (username && username !== "") form.append("username", username);
+        if (advertiser && advertiser !== "") form.append("advertiser", advertiser);
 
         (await Request.post(`${API_URL}/bridges/import`, form, { headers: { authorization: Config.token.authorization } }));
     },

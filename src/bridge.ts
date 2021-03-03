@@ -86,7 +86,7 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         },
     };
 
-    results.update = async (display: string, autostart: number, pin?: string, username?: string): Promise<void> => {
+    results.update = async (display: string, autostart: number, pin?: string, username?: string, advertiser?: string): Promise<void> => {
         await Wait();
 
         (await Request.post(`${API_URL}/bridge/${id}`, {
@@ -94,6 +94,7 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
             autostart,
             pin,
             username,
+            advertiser,
         }, { headers: { authorization: Config.token.authorization } }));
     };
 
