@@ -46,7 +46,7 @@ export default {
     get: async (): Promise<{ [key: string]: any }> => {
         await Wait();
 
-        return (await Request.get(`${API_URL}/config`, { headers: { authorization: GET_TOKEN() } })).data;
+        return (await Request.get(`${API_URL}/config?timestamp=${new Date().getTime()}`, { headers: { authorization: GET_TOKEN() } })).data;
     },
 
     update: async (data: { [key: string]: any }): Promise<void> => {
