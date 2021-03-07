@@ -40,7 +40,7 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
 
     const results = current[index];
 
-    results.status = async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+    results.status = async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
     results.config = {
         get: async (): Promise<{ [key: string]: any }> => {

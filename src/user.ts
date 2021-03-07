@@ -26,7 +26,7 @@ const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 export default async function User(id: number): Promise<UserRecord> {
     await Wait();
 
-    const results: UserRecord = (await Request.get(`${API_URL}/users/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+    const results: UserRecord = (await Request.get(`${API_URL}/users/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
     results.update = async (username: string, password: string, name?: string, permissions?: { [key: string]: boolean }): Promise<void> => {
         await Wait();
