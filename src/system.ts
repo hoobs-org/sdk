@@ -82,5 +82,10 @@ export default async function System(): Promise<{ [key: string]: any }> {
         await Request.put(`${API_URL}/system/reset`, null, { headers: { authorization: Config.token.authorization } });
     };
 
+    results.purge = async (): Promise<void> => {
+        await Wait();
+        await Request.delete(`${API_URL}/cache/purge`, { headers: { authorization: Config.token.authorization } });
+    };
+
     return results;
 }
