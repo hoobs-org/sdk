@@ -17,7 +17,6 @@
  **************************************************************************************************/
 
 import Request from "axios";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
@@ -43,15 +42,9 @@ export default {
         },
     },
 
-    get: async (): Promise<{ [key: string]: any }> => {
-        await Wait();
-
-        return (await Request.get(`${API_URL}/config?timestamp=${new Date().getTime()}`, { headers: { authorization: GET_TOKEN() } })).data;
-    },
+    get: async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/config?timestamp=${new Date().getTime()}`, { headers: { authorization: GET_TOKEN() } })).data,
 
     update: async (data: { [key: string]: any }): Promise<void> => {
-        await Wait();
-
         (await Request.post(`${API_URL}/config`, data, { headers: { authorization: GET_TOKEN() } }));
     },
 };

@@ -18,26 +18,19 @@
 
 import Request from "axios";
 import Config from "./config";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
 export default {
     async status(): Promise<{ [key: string]: any }> {
-        await Wait();
-
         return (await Request.get(`${API_URL}/remote`, { headers: { authorization: Config.token.authorization } })).data;
     },
 
     async connect(): Promise<{ [key: string]: any }> {
-        await Wait();
-
         return (await Request.get(`${API_URL}/remote/start`, { headers: { authorization: Config.token.authorization } })).data;
     },
 
     async disconnect(): Promise<void> {
-        await Wait();
-
         (await Request.get(`${API_URL}/remote/disconnect`, { headers: { authorization: Config.token.authorization } }));
     },
 };

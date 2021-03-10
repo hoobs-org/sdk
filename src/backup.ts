@@ -18,23 +18,18 @@
 
 import Request from "axios";
 import Config from "./config";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 const BACKUPS_URL = process.env.BACKUPS_URL || process.env.VUE_APP_BACKUPS || "/backups";
 
 export default {
     async execute(): Promise<string> {
-        await Wait();
-
         const { filename } = (await Request.get(`${API_URL}/system/backup`, { headers: { authorization: Config.token.authorization } })).data;
 
         return `${BACKUPS_URL}/${filename}`;
     },
 
     async catalog(count?: number): Promise<{ [key: string]: any }[]> {
-        await Wait();
-
         const response = await Request.get(`${API_URL}/system/backup/catalog`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return [];

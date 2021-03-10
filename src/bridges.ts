@@ -19,7 +19,6 @@
 import Request from "axios";
 import Config from "./config";
 import Sanitize from "./sanitize";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
@@ -50,14 +49,10 @@ export interface BridgeRecord {
 
 export const Bridges = {
     async count(): Promise<number> {
-        await Wait();
-
         return (await Request.get(`${API_URL}/bridges/count`)).data.bridges;
     },
 
     async list(): Promise<BridgeRecord[]> {
-        await Wait();
-
         const response = await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return [];
@@ -66,8 +61,6 @@ export const Bridges = {
     },
 
     async add(name: string, port: number, pin?: string, username?: string, advertiser?: string): Promise<boolean> {
-        await Wait();
-
         const current = (await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (!port || Number.isNaN(port)) return false;
@@ -89,8 +82,6 @@ export const Bridges = {
     },
 
     async import(file: Blob, name: string, port: number, pin?: string, username?: string, advertiser?: string): Promise<void> {
-        await Wait();
-
         const form = new FormData();
 
         form.append("file", file);

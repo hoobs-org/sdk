@@ -18,7 +18,6 @@
 
 import Request from "axios";
 import Config from "./config";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
@@ -33,8 +32,6 @@ export interface UserRecord {
 
 export const Users = {
     async list(): Promise<UserRecord[]> {
-        await Wait();
-
         const response = await Request.get(`${API_URL}/users`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return [];
@@ -43,8 +40,6 @@ export const Users = {
     },
 
     async add(username: string, password: string, name?: string, permissions?: { [key: string]: boolean }): Promise<UserRecord[]> {
-        await Wait();
-
         return (await Request.put(`${API_URL}/users`, {
             name: name || username,
             username,

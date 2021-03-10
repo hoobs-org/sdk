@@ -18,24 +18,17 @@
 
 import Request from "axios";
 import Config from "./config";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
 export default async function Room(id: string): Promise<{ [key: string]: any }> {
-    await Wait();
-
     const results = (await Request.get(`${API_URL}/room/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
     results.set = async (characteristic: string, data: any): Promise<void> => {
-        await Wait();
-
         (await Request.put(`${API_URL}/room/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } }));
     };
 
     results.remove = async (): Promise<boolean> => {
-        await Wait();
-
         const result = (await Request.delete(`${API_URL}/room/${id}`, { headers: { authorization: Config.token.authorization } })).data;
 
         if (!result || result.error) return false;

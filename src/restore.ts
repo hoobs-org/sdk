@@ -18,19 +18,15 @@
 
 import Request from "axios";
 import Config from "./config";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
 export default {
     async file(file: string): Promise<void> {
-        await Wait();
         await Request.get(`${API_URL}/system/restore?filename=${encodeURIComponent(file)}`, { headers: { authorization: Config.token.authorization } });
     },
 
     async upload(file: Blob): Promise<void> {
-        await Wait();
-
         const form = new FormData();
 
         form.append("file", file);

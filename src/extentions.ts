@@ -18,14 +18,11 @@
 
 import Request from "axios";
 import Config from "./config";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
 export default {
     async list(): Promise<{ [key: string]: any }[]> {
-        await Wait();
-
         const response = await Request.get(`${API_URL}/extentions`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return [];
@@ -34,8 +31,6 @@ export default {
     },
 
     async add(name: string): Promise<boolean> {
-        await Wait();
-
         (await Request.put(`${API_URL}/extentions/${name}`, null, { headers: { authorization: Config.token.authorization } }));
 
         const current = (await Request.get(`${API_URL}/extentions`, { headers: { authorization: Config.token.authorization } })).data || [];
@@ -44,8 +39,6 @@ export default {
     },
 
     async remove(name: string): Promise<boolean> {
-        await Wait();
-
         (await Request.delete(`${API_URL}/extentions/${name}`, { headers: { authorization: Config.token.authorization } }));
 
         const current = (await Request.get(`${API_URL}/extentions`, { headers: { authorization: Config.token.authorization } })).data || [];

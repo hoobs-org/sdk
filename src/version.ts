@@ -18,18 +18,13 @@
 
 import Request from "axios";
 import Status from "./status";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
 export async function Version(): Promise<string> {
-    await Wait();
-
     return (await Request.get(`${API_URL}`)).data.version;
 }
 
 export async function Latest(): Promise<string> {
-    await Wait();
-
     return (await Status()).current;
 }

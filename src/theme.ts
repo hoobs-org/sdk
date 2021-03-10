@@ -18,7 +18,6 @@
 
 import Request from "axios";
 import Config from "./config";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
@@ -119,20 +118,14 @@ export interface Theme {
 
 export const Themes = {
     async get(name: string): Promise<Theme> {
-        await Wait();
-
         return (await Request.get(`${API_URL}/theme/${name}`, { headers: { authorization: Config.token.authorization } })).data;
     },
 
     async save(name: string, theme: Theme) {
-        await Wait();
-
         (await Request.post(`${API_URL}/theme/${name}`, theme, { headers: { authorization: Config.token.authorization } }));
     },
 
     async backdrop(image: Blob): Promise<string> {
-        await Wait();
-
         const form = new FormData();
 
         form.append("file", image);

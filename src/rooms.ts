@@ -19,7 +19,6 @@
 import Request from "axios";
 import Config from "./config";
 import Sanitize from "./sanitize";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
@@ -32,8 +31,6 @@ export interface RoomRecord {
 
 export const Rooms = {
     async count(): Promise<number> {
-        await Wait();
-
         const response = await Request.get(`${API_URL}/accessories`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return 0;
@@ -42,8 +39,6 @@ export const Rooms = {
     },
 
     async list(): Promise<RoomRecord[]> {
-        await Wait();
-
         const response = await Request.get(`${API_URL}/rooms`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return [];
@@ -52,8 +47,6 @@ export const Rooms = {
     },
 
     async add(name: string, sequence?: number): Promise<boolean> {
-        await Wait();
-
         const results = (await Request.put(`${API_URL}/room`, {
             name,
             sequence: sequence || 0,

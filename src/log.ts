@@ -18,7 +18,6 @@
 
 import Request from "axios";
 import Config from "./config";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
@@ -40,8 +39,6 @@ export interface Message {
 }
 
 export async function Log(tail?: number): Promise<Message[]> {
-    await Wait();
-
     let response;
 
     if (tail) {

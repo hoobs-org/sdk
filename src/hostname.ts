@@ -18,20 +18,13 @@
 
 import Request from "axios";
 import Config from "./config";
-import { Wait } from "./wait";
 
 const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
 
 export default {
-    get: async (): Promise<{ [key: string]: any }> => {
-        await Wait();
-
-        return (await Request.get(`${API_URL}/system/hostname`, { headers: { authorization: Config.token.authorization } })).data.hostname;
-    },
+    get: async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/system/hostname`, { headers: { authorization: Config.token.authorization } })).data.hostname,
 
     update: async (hostname: string): Promise<void> => {
-        await Wait();
-
         (await Request.post(`${API_URL}/system/hostname`, { hostname }, { headers: { authorization: Config.token.authorization } }));
     },
 };
