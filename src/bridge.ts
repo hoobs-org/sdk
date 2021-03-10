@@ -67,22 +67,28 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
             return response.data || [];
         },
 
-        install: async (identifier: string): Promise<void> => {
+        install: async (identifier: string): Promise<boolean> => {
             await Wait();
 
-            (await Request.put(`${API_URL}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } }));
+            if (((await Request.put(`${API_URL}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
+
+            return false;
         },
 
-        upgrade: async (identifier: string): Promise<void> => {
+        upgrade: async (identifier: string): Promise<boolean> => {
             await Wait();
 
-            (await Request.post(`${API_URL}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } }));
+            if (((await Request.post(`${API_URL}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
+
+            return false;
         },
 
-        uninstall: async (identifier: string): Promise<void> => {
+        uninstall: async (identifier: string): Promise<boolean> => {
             await Wait();
 
-            (await Request.delete(`${API_URL}/plugins/${id}/${identifier}`, { headers: { authorization: Config.token.authorization } }));
+            if (((await Request.delete(`${API_URL}/plugins/${id}/${identifier}`, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
+
+            return false;
         },
     };
 
