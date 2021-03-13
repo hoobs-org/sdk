@@ -117,7 +117,7 @@ Now you will be able to access the SDK via `this.$hoobs` in your components.
 
 ## Documentation
 SDK documentation can be found here.  
-[SDK Documentation](https://github.com/hoobs-org/HOOBS/blob/main/docs/SDK.md)  
+[SDK Documentation](https://github.com/hoobs-org/HOOBS/blob/development/docs/SDK.md)  
 
 ## Legal
 HOOBS and the HOOBS logo are registered trademarks of HOOBS Inc. Copyright (C) 2020 HOOBS Inc. All rights reserved.
