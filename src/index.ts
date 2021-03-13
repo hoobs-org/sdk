@@ -33,7 +33,6 @@ import Accessories from "./accessories";
 import Accessory from "./accessory";
 import Location from "./location";
 import Weather from "./weather";
-import Remote from "./remote";
 import Socket from "./socket";
 import Dates from "./dates";
 import Room from "./room";
@@ -72,7 +71,6 @@ const sdk = {
     location: Location,
     repository: Repository,
     weather: Weather,
-    remote: Remote,
     io: Socket,
 };
 
