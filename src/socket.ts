@@ -27,40 +27,35 @@ class Socket {
 
     declare private events: { [key: string]: ((args: any) => any) };
 
-    declare private terminal: boolean;
-
-    constructor(host?: string, port?:number) {
+    constructor() {
         this.events = {};
+    }
+
+    connect(host?: string, port?:number) {
+        const keys = Object.keys(this.events);
+
         this.io = io(host ? `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}` : SOCKET_URL);
-        this.terminal = false;
+
+        for (let i = 0; i < keys.length; i += 1) {
+            this.io.on(keys[i], this.events[keys[i]]);
+        }
     }
 
     on(event: string, callback: (args: any) => any) {
         this.off(event);
         this.events[event] = callback;
-        this.io.on(event, this.events[event]);
+
+        if (this.io) this.io.on(event, this.events[event]);
     }
 
     off(event: string) {
-        this.io.off(event, this.events[event]);
+        if (this.io) this.io.off(event, this.events[event]);
 
         delete this.events[event];
     }
 
     emit(event: string, ...args: any) {
-        if (event === "shell_connect") {
-            if (this.terminal) this.emit("shell_disconnect");
-
-            this.terminal = true;
-        }
-
-        if (event === "shell_disconnect") {
-            if (this.terminal) this.off("shell_output");
-
-            this.terminal = false;
-        }
-
-        this.io.emit(event, args);
+        if (this.io) this.io.emit(event, args);
     }
 
     install(vue: any): void {
