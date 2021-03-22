@@ -20,38 +20,52 @@ import io from "socket.io-client";
 
 const SOCKET_URL = process.env.VUE_APP_SOCKET || "/";
 
+interface EventRecord {
+    event: string;
+    listner: (args: any) => any;
+}
+
 class Socket {
     declare private io: any;
 
     declare private url: string;
 
-    declare private events: { [key: string]: ((args: any) => any) };
+    declare private events: EventRecord[];
 
     constructor() {
-        this.events = {};
+        this.events = [];
     }
 
     connect(host?: string, port?:number) {
-        const keys = Object.keys(this.events);
-
         this.io = io(host ? `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}` : SOCKET_URL);
 
-        for (let i = 0; i < keys.length; i += 1) {
-            this.io.on(keys[i], this.events[keys[i]]);
+        this.io.removeAllListeners();
+
+        for (let i = 0; i < this.events.length; i += 1) {
+            this.io.on(this.events[i].event, this.events[i].listner);
         }
     }
 
-    on(event: string, callback: (args: any) => any) {
-        this.off(event);
-        this.events[event] = callback;
+    on(event: string, listner: (args: any) => any) {
+        const index = this.events.length;
 
-        if (this.io) this.io.on(event, this.events[event]);
+        this.events.push({
+            event,
+            listner,
+        });
+
+        if (this.io) this.io.on(this.events[index].event, this.events[index].listner);
     }
 
     off(event: string) {
-        if (this.io) this.io.off(event, this.events[event]);
+        let index = this.events.findIndex((item) => item.event === event);
 
-        delete this.events[event];
+        while (index >= 0) {
+            if (this.io) this.io.off(this.events[index].event, this.events[index].listner);
+
+            this.events.splice(index, 1);
+            index = this.events.findIndex((item) => item.event === event);
+        }
     }
 
     emit(event: string, ...args: any) {
