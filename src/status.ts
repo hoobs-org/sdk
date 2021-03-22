@@ -19,8 +19,6 @@
 import Request from "axios";
 import Config from "./config";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export default async function Status(): Promise<{ [key: string]: any }> {
-    return (await Request.get(`${API_URL}/status`, { headers: { authorization: Config.token.authorization } })).data;
+    return (await Request.get(`${Config.host.get()}/status`, { headers: { authorization: Config.token.authorization } })).data;
 }

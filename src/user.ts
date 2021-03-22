@@ -20,13 +20,11 @@ import Request from "axios";
 import Config from "./config";
 import { UserRecord } from "./users";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export default async function User(id: number): Promise<UserRecord> {
-    const results: UserRecord = (await Request.get(`${API_URL}/users/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
+    const results: UserRecord = (await Request.get(`${Config.host.get()}/users/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
     results.update = async (username: string, password: string, name?: string, permissions?: { [key: string]: boolean }): Promise<void> => {
-        (await Request.post(`${API_URL}/users/${id}`, {
+        (await Request.post(`${Config.host.get()}/users/${id}`, {
             name: name || username,
             username,
             password,
@@ -35,7 +33,7 @@ export default async function User(id: number): Promise<UserRecord> {
     };
 
     results.remove = async () => {
-        (await Request.delete(`${API_URL}/users/${id}`, { headers: { authorization: Config.token.authorization } }));
+        (await Request.delete(`${Config.host.get()}/users/${id}`, { headers: { authorization: Config.token.authorization } }));
     };
 
     return results;

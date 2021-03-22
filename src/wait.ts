@@ -17,8 +17,7 @@
  **************************************************************************************************/
 
 import Request from "axios";
-
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
+import Config from "./config";
 
 export function Sleep(timeout: number): Promise<void> {
     return new Promise((resolve) => {
@@ -30,7 +29,7 @@ export function Sleep(timeout: number): Promise<void> {
 
 export async function Wait(saftey?: number): Promise<string> {
     try {
-        return (await Request.get(`${API_URL}`)).data.version;
+        return (await Request.get(`${Config.host.get()}`)).data.version;
     } catch (error) {
         if ((saftey || 0) > 50) throw error;
     }

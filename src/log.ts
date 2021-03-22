@@ -19,8 +19,6 @@
 import Request from "axios";
 import Config from "./config";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export declare const enum LogLevel {
     INFO = "info",
     WARN = "warn",
@@ -42,9 +40,9 @@ export async function Log(tail?: number): Promise<Message[]> {
     let response;
 
     if (tail) {
-        response = await Request.get(`${API_URL}/log/${tail}`, { headers: { authorization: Config.token.authorization } });
+        response = await Request.get(`${Config.host.get()}/log/${tail}`, { headers: { authorization: Config.token.authorization } });
     } else {
-        response = await Request.get(`${API_URL}/log`);
+        response = await Request.get(`${Config.host.get()}/log`);
     }
 
     if (!Array.isArray(response.data)) return [];

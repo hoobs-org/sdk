@@ -29,9 +29,9 @@ class Socket {
 
     declare private terminal: boolean;
 
-    constructor() {
+    constructor(host?: string, port?:number) {
         this.events = {};
-        this.io = io(SOCKET_URL);
+        this.io = io(host ? `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}` : SOCKET_URL);
         this.terminal = false;
     }
 

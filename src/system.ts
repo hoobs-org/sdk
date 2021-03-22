@@ -19,23 +19,21 @@
 import Request from "axios";
 import Config from "./config";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export default async function System(): Promise<{ [key: string]: any }> {
-    const results = (await Request.get(`${API_URL}/system`, { headers: { authorization: Config.token.authorization } })).data || {};
+    const results = (await Request.get(`${Config.host.get()}/system`, { headers: { authorization: Config.token.authorization } })).data || {};
 
-    results.cpu = async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/system/cpu`, { headers: { authorization: Config.token.authorization } })).data;
+    results.cpu = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/system/cpu`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.memory = async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/system/memory`, { headers: { authorization: Config.token.authorization } })).data;
+    results.memory = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/system/memory`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.network = async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/system/network`, { headers: { authorization: Config.token.authorization } })).data;
+    results.network = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/system/network`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.filesystem = async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/system/filesystem`, { headers: { authorization: Config.token.authorization } })).data;
+    results.filesystem = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/system/filesystem`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.activity = async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/system/activity`, { headers: { authorization: Config.token.authorization } })).data;
+    results.activity = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/system/activity`, { headers: { authorization: Config.token.authorization } })).data;
 
     results.temp = async (): Promise<{ [key: string]: any } | undefined> => {
-        const info = (await Request.get(`${API_URL}/system/temp`, { headers: { authorization: Config.token.authorization } })).data;
+        const info = (await Request.get(`${Config.host.get()}/system/temp`, { headers: { authorization: Config.token.authorization } })).data;
 
         if (info.main === -1) return undefined;
 
@@ -43,19 +41,19 @@ export default async function System(): Promise<{ [key: string]: any }> {
     };
 
     results.upgrade = async (): Promise<void> => {
-        await Request.post(`${API_URL}/system/upgrade`, null, { headers: { authorization: Config.token.authorization } });
+        await Request.post(`${Config.host.get()}/system/upgrade`, null, { headers: { authorization: Config.token.authorization } });
     };
 
     results.reboot = async (): Promise<void> => {
-        await Request.put(`${API_URL}/system/reboot`, null, { headers: { authorization: Config.token.authorization } });
+        await Request.put(`${Config.host.get()}/system/reboot`, null, { headers: { authorization: Config.token.authorization } });
     };
 
     results.reset = async (): Promise<void> => {
-        await Request.put(`${API_URL}/system/reset`, null, { headers: { authorization: Config.token.authorization } });
+        await Request.put(`${Config.host.get()}/system/reset`, null, { headers: { authorization: Config.token.authorization } });
     };
 
     results.purge = async (): Promise<void> => {
-        await Request.delete(`${API_URL}/cache/purge`, { headers: { authorization: Config.token.authorization } });
+        await Request.delete(`${Config.host.get()}/cache/purge`, { headers: { authorization: Config.token.authorization } });
     };
 
     return results;

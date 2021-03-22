@@ -20,8 +20,6 @@ import Request from "axios";
 import Config from "./config";
 import Sanitize from "./sanitize";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export interface BridgeRecord {
     id: string;
     type: string;
@@ -49,11 +47,11 @@ export interface BridgeRecord {
 
 export const Bridges = {
     async count(): Promise<number> {
-        return (await Request.get(`${API_URL}/bridges/count`)).data.bridges;
+        return (await Request.get(`${Config.host.get()}/bridges/count`)).data.bridges;
     },
 
     async list(): Promise<BridgeRecord[]> {
-        const response = await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } });
+        const response = await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return [];
 
@@ -61,14 +59,14 @@ export const Bridges = {
     },
 
     async add(name: string, port: number, pin?: string, username?: string, advertiser?: string): Promise<boolean> {
-        const current = (await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
+        const current = (await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (!port || Number.isNaN(port)) return false;
         if (port < 1 || port > 65535) return false;
         if (current.findIndex((n: any) => n.port === port) >= 0) return false;
         if (current.findIndex((n: any) => n.id === Sanitize(name)) >= 0) return false;
 
-        const results = (await Request.put(`${API_URL}/bridges`, {
+        const results = (await Request.put(`${Config.host.get()}/bridges`, {
             name,
             port,
             pin,
@@ -92,6 +90,6 @@ export const Bridges = {
         if (username && username !== "") form.append("username", username);
         if (advertiser && advertiser !== "") form.append("advertiser", advertiser);
 
-        (await Request.post(`${API_URL}/bridges/import`, form, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${Config.host.get()}/bridges/import`, form, { headers: { authorization: Config.token.authorization } }));
     },
 };

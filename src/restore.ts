@@ -19,11 +19,9 @@
 import Request from "axios";
 import Config from "./config";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export default {
     async file(file: string): Promise<void> {
-        await Request.get(`${API_URL}/system/restore?filename=${encodeURIComponent(file)}`, { headers: { authorization: Config.token.authorization } });
+        await Request.get(`${Config.host.get()}/system/restore?filename=${encodeURIComponent(file)}`, { headers: { authorization: Config.token.authorization } });
     },
 
     async upload(file: Blob): Promise<void> {
@@ -31,6 +29,6 @@ export default {
 
         form.append("file", file);
 
-        (await Request.post(`${API_URL}/system/restore`, form, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${Config.host.get()}/system/restore`, form, { headers: { authorization: Config.token.authorization } }));
     },
 };

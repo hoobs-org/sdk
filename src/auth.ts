@@ -19,23 +19,21 @@
 import Request from "axios";
 import Config from "./config";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export default {
     async status(): Promise<string> {
-        return (await Request.get(`${API_URL}/auth`, { headers: { authorization: Config.token.authorization } })).data.state;
+        return (await Request.get(`${Config.host.get()}/auth`, { headers: { authorization: Config.token.authorization } })).data.state;
     },
 
     async validate(): Promise<boolean> {
-        return (await Request.get(`${API_URL}/auth/validate`, { headers: { authorization: Config.token.authorization } })).data.valid;
+        return (await Request.get(`${Config.host.get()}/auth/validate`, { headers: { authorization: Config.token.authorization } })).data.valid;
     },
 
     async disable(): Promise<void> {
-        await Request.post(`${API_URL}/auth/disable`);
+        await Request.post(`${Config.host.get()}/auth/disable`);
     },
 
     async login(username: string, password: string, remember?: boolean): Promise<boolean> {
-        const { token } = (await Request.post(`${API_URL}/auth/logon`, { username, password, remember })).data;
+        const { token } = (await Request.post(`${Config.host.get()}/auth/logon`, { username, password, remember })).data;
 
         if (token) {
             Config.token.authorization = token;
@@ -47,11 +45,11 @@ export default {
     },
 
     async link(vendor: string, username: string, password: string, verification?: string) {
-        return (await Request.post(`${API_URL}/auth/vendor/${vendor}`, { username, password, verification }, { headers: { authorization: Config.token.authorization } })).data;
+        return (await Request.post(`${Config.host.get()}/auth/vendor/${vendor}`, { username, password, verification }, { headers: { authorization: Config.token.authorization } })).data;
     },
 
     async logout(): Promise<void> {
-        await Request.get(`${API_URL}/auth/logout`, { headers: { authorization: Config.token.authorization } });
+        await Request.get(`${Config.host.get()}/auth/logout`, { headers: { authorization: Config.token.authorization } });
 
         Config.token.authorization = "";
     },

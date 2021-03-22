@@ -19,11 +19,9 @@
 import Request from "axios";
 import Config from "./config";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export default {
     async list(): Promise<{ [key: string]: any }[]> {
-        const response = await Request.get(`${API_URL}/extentions`, { headers: { authorization: Config.token.authorization } });
+        const response = await Request.get(`${Config.host.get()}/extentions`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return [];
 
@@ -31,17 +29,17 @@ export default {
     },
 
     async add(name: string): Promise<boolean> {
-        (await Request.put(`${API_URL}/extentions/${name}`, null, { headers: { authorization: Config.token.authorization } }));
+        (await Request.put(`${Config.host.get()}/extentions/${name}`, null, { headers: { authorization: Config.token.authorization } }));
 
-        const current = (await Request.get(`${API_URL}/extentions`, { headers: { authorization: Config.token.authorization } })).data || [];
+        const current = (await Request.get(`${Config.host.get()}/extentions`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         return (current.findIndex((e: { [key: string]: string | boolean }) => e.feature === name && e.enabled) >= 0);
     },
 
     async remove(name: string): Promise<boolean> {
-        (await Request.delete(`${API_URL}/extentions/${name}`, { headers: { authorization: Config.token.authorization } }));
+        (await Request.delete(`${Config.host.get()}/extentions/${name}`, { headers: { authorization: Config.token.authorization } }));
 
-        const current = (await Request.get(`${API_URL}/extentions`, { headers: { authorization: Config.token.authorization } })).data || [];
+        const current = (await Request.get(`${Config.host.get()}/extentions`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         return (current.findIndex((e: { [key: string]: string | boolean }) => e.feature === name && e.enabled) === -1);
     },
