@@ -49,7 +49,7 @@ export default {
         },
 
         set(host: string, port?: number) {
-            GET_HOST = `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}/api`;
+            GET_HOST = `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}`;
         },
     },
 
