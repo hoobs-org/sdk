@@ -19,10 +19,8 @@
 import Request from "axios";
 import Config from "./config";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export default async function Location(query: string, count?: number): Promise<{ [key: string]: number | string }[]> {
-    const response = await Request.get(`${API_URL}/weather/location?query=${encodeURIComponent(query)}&count=${count || 5}`, { headers: { authorization: Config.token.authorization } });
+    const response = await Request.get(`${Config.host.get()}/weather/location?query=${encodeURIComponent(query)}&count=${count || 5}`, { headers: { authorization: Config.token.authorization } });
 
     if (!Array.isArray(response.data)) return [];
 

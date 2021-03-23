@@ -19,13 +19,11 @@
 import Request from "axios";
 import Config from "./config";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export default async function Plugin(bridge: string, identifier: string, action?: string, data?: { [key: string]: any }): Promise<{ [key: string]: any }[]> {
     data = data || {};
     data.bridge = bridge;
 
-    if (action && action !== "") return (await Request.post(`${API_URL}/plugin/${identifier}/${action}`, data || {}, { headers: { authorization: Config.token.authorization } })).data;
+    if (action && action !== "") return (await Request.post(`${Config.host.get()}/plugin/${identifier}/${action}`, data || {}, { headers: { authorization: Config.token.authorization } })).data;
 
-    return (await Request.post(`${API_URL}/plugin/${identifier}`, data || {}, { headers: { authorization: Config.token.authorization } })).data;
+    return (await Request.post(`${Config.host.get()}/plugin/${identifier}`, data || {}, { headers: { authorization: Config.token.authorization } })).data;
 }

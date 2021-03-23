@@ -20,47 +20,57 @@ import io from "socket.io-client";
 
 const SOCKET_URL = process.env.VUE_APP_SOCKET || "/";
 
+interface EventRecord {
+    event: string;
+    listner: (args: any) => any;
+}
+
 class Socket {
     declare private io: any;
 
     declare private url: string;
 
-    declare private events: { [key: string]: ((args: any) => any) };
-
-    declare private terminal: boolean;
+    declare private events: EventRecord[];
 
     constructor() {
-        this.events = {};
-        this.io = io(SOCKET_URL);
-        this.terminal = false;
+        this.events = [];
     }
 
-    on(event: string, callback: (args: any) => any) {
-        this.off(event);
-        this.events[event] = callback;
-        this.io.on(event, this.events[event]);
+    connect(host?: string, port?:number) {
+        if (this.io) this.io.close();
+
+        this.io = io(host ? `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}` : SOCKET_URL);
+        this.io.removeAllListeners();
+
+        for (let i = 0; i < this.events.length; i += 1) {
+            this.io.on(this.events[i].event, this.events[i].listner);
+        }
+    }
+
+    on(event: string, listner: (args: any) => any) {
+        const index = this.events.length;
+
+        this.events.push({
+            event,
+            listner,
+        });
+
+        if (this.io) this.io.on(this.events[index].event, this.events[index].listner);
     }
 
     off(event: string) {
-        this.io.off(event, this.events[event]);
+        let index = this.events.findIndex((item) => item.event === event);
 
-        delete this.events[event];
+        while (index >= 0) {
+            if (this.io) this.io.off(this.events[index].event, this.events[index].listner);
+
+            this.events.splice(index, 1);
+            index = this.events.findIndex((item) => item.event === event);
+        }
     }
 
     emit(event: string, ...args: any) {
-        if (event === "shell_connect") {
-            if (this.terminal) this.emit("shell_disconnect");
-
-            this.terminal = true;
-        }
-
-        if (event === "shell_disconnect") {
-            if (this.terminal) this.off("shell_output");
-
-            this.terminal = false;
-        }
-
-        this.io.emit(event, args);
+        if (this.io) this.io.emit(event, args);
     }
 
     install(vue: any): void {

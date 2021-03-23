@@ -18,10 +18,11 @@
 
 import Request from "axios";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
+const API_URL = process.env.API_URL || process.env.VUE_APP_API || "";
 
 let GET_TOKEN: () => string = () => "";
 let SET_TOKEN: (token: string) => void = () => { /* null */ };
+let GET_HOST: string = API_URL;
 
 export default {
     token: {
@@ -42,9 +43,19 @@ export default {
         },
     },
 
-    get: async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/config?timestamp=${new Date().getTime()}`, { headers: { authorization: GET_TOKEN() } })).data,
+    host: {
+        get(folder?: string): string {
+            return `${GET_HOST}/${folder || "api"}`;
+        },
+
+        set(host: string, port?: number) {
+            GET_HOST = `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}`;
+        },
+    },
+
+    get: async (): Promise<{ [key: string]: any }> => (await Request.get(`${GET_HOST}/api/config?timestamp=${new Date().getTime()}`, { headers: { authorization: GET_TOKEN() } })).data,
 
     update: async (data: { [key: string]: any }): Promise<void> => {
-        (await Request.post(`${API_URL}/config`, data, { headers: { authorization: GET_TOKEN() } }));
+        (await Request.post(`${GET_HOST}/api/config`, data, { headers: { authorization: GET_TOKEN() } }));
     },
 };

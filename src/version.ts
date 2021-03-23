@@ -18,11 +18,10 @@
 
 import Request from "axios";
 import Status from "./status";
-
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
+import Config from "./config";
 
 export async function Version(): Promise<string> {
-    return (await Request.get(`${API_URL}`)).data.version;
+    return (await Request.get(`${Config.host.get()}`)).data.version;
 }
 
 export async function Latest(): Promise<string> {

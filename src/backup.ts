@@ -19,18 +19,15 @@
 import Request from "axios";
 import Config from "./config";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-const BACKUPS_URL = process.env.BACKUPS_URL || process.env.VUE_APP_BACKUPS || "/backups";
-
 export default {
     async execute(): Promise<string> {
-        const { filename } = (await Request.get(`${API_URL}/system/backup`, { headers: { authorization: Config.token.authorization } })).data;
+        const { filename } = (await Request.get(`${Config.host.get()}/system/backup`, { headers: { authorization: Config.token.authorization } })).data;
 
-        return `${BACKUPS_URL}/${filename}`;
+        return `${Config.host.get("backups")}/${filename}`;
     },
 
     async catalog(count?: number): Promise<{ [key: string]: any }[]> {
-        const response = await Request.get(`${API_URL}/system/backup/catalog`, { headers: { authorization: Config.token.authorization } });
+        const response = await Request.get(`${Config.host.get()}/system/backup/catalog`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return [];
 

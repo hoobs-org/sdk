@@ -21,35 +21,32 @@ import Config from "./config";
 import Sanitize from "./sanitize";
 import { BridgeRecord } from "./bridges";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-const BACKUPS_URL = process.env.BACKUPS_URL || process.env.VUE_APP_BACKUPS || "/backups";
-
 export default async function Bridge(name: string): Promise<BridgeRecord | undefined> {
     const id = Sanitize(name);
 
     if (!name || name === "") return undefined;
     if (id === "hub") return undefined;
 
-    const current = (await Request.get(`${API_URL}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
+    const current = (await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
     const index = current.findIndex((n: any) => n.id === id);
 
     if (index === -1) return undefined;
 
     const results = current[index];
 
-    results.status = async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
+    results.status = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
     results.config = {
-        get: async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/config/${id}`, { headers: { authorization: Config.token.authorization } })).data,
+        get: async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/config/${id}`, { headers: { authorization: Config.token.authorization } })).data,
 
         update: async (data: { [key: string]: any }): Promise<void> => {
-            (await Request.post(`${API_URL}/config/${id}`, data, { headers: { authorization: Config.token.authorization } }));
+            (await Request.post(`${Config.host.get()}/config/${id}`, data, { headers: { authorization: Config.token.authorization } }));
         },
     };
 
     results.plugins = {
         list: async (): Promise<{ [key: string]: any }[]> => {
-            const response = await Request.get(`${API_URL}/plugins/${id}`, { headers: { authorization: Config.token.authorization } });
+            const response = await Request.get(`${Config.host.get()}/plugins/${id}`, { headers: { authorization: Config.token.authorization } });
 
             if (!Array.isArray(response.data)) return [];
 
@@ -57,26 +54,26 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         },
 
         install: async (identifier: string): Promise<boolean> => {
-            if (((await Request.put(`${API_URL}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
+            if (((await Request.put(`${Config.host.get()}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
 
             return false;
         },
 
         upgrade: async (identifier: string): Promise<boolean> => {
-            if (((await Request.post(`${API_URL}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
+            if (((await Request.post(`${Config.host.get()}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
 
             return false;
         },
 
         uninstall: async (identifier: string): Promise<boolean> => {
-            if (((await Request.delete(`${API_URL}/plugins/${id}/${identifier}`, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
+            if (((await Request.delete(`${Config.host.get()}/plugins/${id}/${identifier}`, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
 
             return false;
         },
     };
 
     results.update = async (display: string, autostart: number, pin?: string, username?: string, advertiser?: string): Promise<void> => {
-        (await Request.post(`${API_URL}/bridge/${id}`, {
+        (await Request.post(`${Config.host.get()}/bridge/${id}`, {
             display,
             autostart,
             pin,
@@ -94,13 +91,13 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
 
         if (end > start) return false;
 
-        (await Request.post(`${API_URL}/bridge/${id}/ports`, { start, end }, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${Config.host.get()}/bridge/${id}/ports`, { start, end }, { headers: { authorization: Config.token.authorization } }));
 
         return true;
     };
 
     results.accessories = async (): Promise<{ [key: string]: any }[]> => {
-        const response = await Request.get(`${API_URL}/accessories/${id}`, { headers: { authorization: Config.token.authorization } });
+        const response = await Request.get(`${Config.host.get()}/accessories/${id}`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return [];
 
@@ -108,35 +105,35 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
     };
 
     results.start = async (): Promise<void> => {
-        (await Request.post(`${API_URL}/bridge/${id}/start`, null, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${Config.host.get()}/bridge/${id}/start`, null, { headers: { authorization: Config.token.authorization } }));
     };
 
     results.stop = async (): Promise<void> => {
-        (await Request.post(`${API_URL}/bridge/${id}/stop`, null, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${Config.host.get()}/bridge/${id}/stop`, null, { headers: { authorization: Config.token.authorization } }));
     };
 
     results.restart = async (): Promise<void> => {
-        (await Request.post(`${API_URL}/bridge/${id}/restart`, null, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${Config.host.get()}/bridge/${id}/restart`, null, { headers: { authorization: Config.token.authorization } }));
     };
 
-    results.cache = async (): Promise<{ [key: string]: any }> => (await Request.get(`${API_URL}/cache/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+    results.cache = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/cache/${id}`, { headers: { authorization: Config.token.authorization } })).data;
 
     results.purge = async (uuid?: string): Promise<void> => {
         if (uuid) {
-            (await Request.delete(`${API_URL}/cache/${id}/purge/${uuid}`, { headers: { authorization: Config.token.authorization } }));
+            (await Request.delete(`${Config.host.get()}/cache/${id}/purge/${uuid}`, { headers: { authorization: Config.token.authorization } }));
         } else {
-            (await Request.delete(`${API_URL}/cache/${id}/purge`, { headers: { authorization: Config.token.authorization } }));
+            (await Request.delete(`${Config.host.get()}/cache/${id}/purge`, { headers: { authorization: Config.token.authorization } }));
         }
     };
 
     results.export = async (): Promise<string> => {
-        const { filename } = (await Request.get(`${API_URL}/bridge/${id}/export`, { headers: { authorization: Config.token.authorization } })).data;
+        const { filename } = (await Request.get(`${Config.host.get()}/bridge/${id}/export`, { headers: { authorization: Config.token.authorization } })).data;
 
-        return `${BACKUPS_URL}/${filename}`;
+        return `${Config.host.get("backups")}/${filename}`;
     };
 
     results.remove = async (): Promise<boolean> => {
-        const updated = (await Request.delete(`${API_URL}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data || [];
+        const updated = (await Request.delete(`${Config.host.get()}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (updated.findIndex((n: any) => n.id === id) >= 0) return false;
 

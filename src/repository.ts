@@ -80,6 +80,8 @@ export default {
         result = result.replace(/macos/gi, "macOS");
         result = result.replace(/mac os/gi, "macOS");
         result = result.replace(/mac o s/gi, "macOS");
+        result = result.replace(/ewelink/gi, "eWeLink");
+        result = result.replace(/ffmpeg/gi, "FFmpeg");
 
         return result;
     },

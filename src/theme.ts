@@ -19,8 +19,6 @@
 import Request from "axios";
 import Config from "./config";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "/api";
-
 export interface InputTheme {
     background: string;
     accent: string;
@@ -118,11 +116,11 @@ export interface Theme {
 
 export const Themes = {
     async get(name: string): Promise<Theme> {
-        return (await Request.get(`${API_URL}/theme/${name}`, { headers: { authorization: Config.token.authorization } })).data;
+        return (await Request.get(`${Config.host.get()}/theme/${name}`, { headers: { authorization: Config.token.authorization } })).data;
     },
 
     async save(name: string, theme: Theme) {
-        (await Request.post(`${API_URL}/theme/${name}`, theme, { headers: { authorization: Config.token.authorization } }));
+        (await Request.post(`${Config.host.get()}/theme/${name}`, theme, { headers: { authorization: Config.token.authorization } }));
     },
 
     async backdrop(image: Blob): Promise<string> {
@@ -130,6 +128,6 @@ export const Themes = {
 
         form.append("file", image);
 
-        return (await Request.post(`${API_URL}/themes/backdrop`, form, { headers: { authorization: Config.token.authorization } })).data.filename;
+        return (await Request.post(`${Config.host.get()}/themes/backdrop`, form, { headers: { authorization: Config.token.authorization } })).data.filename;
     },
 };
