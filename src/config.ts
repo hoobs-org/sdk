@@ -64,7 +64,7 @@ function search() {
 export default {
     token: {
         get authorization() {
-            return GET_TOKEN();
+            return (typeof GET_TOKEN === "function") ? GET_TOKEN() : "";
         },
 
         set authorization(value: string) {
