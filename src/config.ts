@@ -86,7 +86,7 @@ export default {
         },
 
         domain(): string {
-            return GET_HOST.split("/")[2] || "/";
+            return (GET_HOST.split("/")[2] || "").split(":").shift() || "";
         },
 
         set(host: string, port?: number) {
