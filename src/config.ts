@@ -38,7 +38,7 @@ interface SetupToken {
 }
 
 function search() {
-    const query: { [key: string]: string | undefined }[] = ((window.location.search || "").split("&").map((entry) => {
+    const query: { [key: string]: string | undefined }[] = ((window.location.search || "").replace("?", "").split("&").map((entry) => {
         const pairs = entry.split("=");
         const key = pairs.shift();
         const value = pairs.shift();
@@ -94,13 +94,13 @@ export default {
         },
     },
 
-    async setup() {
+    setup() {
         const query = search();
 
         if (query.token) {
             const data:SetupToken = JSON.parse(atob(decodeURIComponent(query.token)));
 
-            GET_TOKEN = () => data.token;
+            GET_TOKEN = () => data.token || "";
             GET_HOST = `http://${data.host}:${data.port && data.port >= 1 && data.port <= 65535 ? data.port : 80}`;
 
             if (data.bridge) RESTRICT_BRIDGE = data.bridge;
