@@ -26,10 +26,39 @@ let GET_TOKEN: () => string = () => "";
 let SET_TOKEN: (token: string) => void = () => { /* null */ };
 let GET_HOST: string = API_URL;
 
+let RESTRICT_BRIDGE: string | undefined;
+let RESTRICT_PLUGIN: string | undefined;
+
 interface SetupToken {
     token: string;
     host: string;
     port: number;
+    bridge?: string;
+    plugin?: string;
+}
+
+function search() {
+    const query: { [key: string]: string | undefined }[] = ((window.location.search || "").split("&").map((entry) => {
+        const pairs = entry.split("=");
+        const key = pairs.shift();
+        const value = pairs.shift();
+
+        return {
+            key,
+            value,
+        };
+    }));
+
+    const results: { [key: string]: string | undefined } = {};
+
+    for (let i = 0; i < query.length; i += 1) {
+        const { key } = query[i];
+        const { value } = query[i];
+
+        if (key && key !== "") results[key] = value;
+    }
+
+    return results;
 }
 
 export default {
@@ -56,21 +85,66 @@ export default {
             return `${GET_HOST}/${folder || "api"}`;
         },
 
+        domain(): string {
+            return GET_HOST.split("/")[2] || "/";
+        },
+
         set(host: string, port?: number) {
             GET_HOST = `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}`;
         },
     },
 
-    setup(token: string) {
-        const data:SetupToken = JSON.parse(atob(decodeURIComponent(token)));
+    async setup() {
+        const query = search();
 
-        GET_TOKEN = () => data?.token || "";
-        GET_HOST = `http://${data.host}:${data.port && data.port >= 1 && data.port <= 65535 ? data.port : 80}`;
+        if (query.token) {
+            const data:SetupToken = JSON.parse(atob(decodeURIComponent(query.token)));
+
+            GET_TOKEN = () => data?.token || "";
+            GET_HOST = `http://${data.host}:${data.port && data.port >= 1 && data.port <= 65535 ? data.port : 80}`;
+
+            if (data?.bridge) RESTRICT_BRIDGE = data?.bridge;
+            if (data?.plugin) RESTRICT_PLUGIN = data?.plugin;
+        }
     },
 
-    get: async (): Promise<{ [key: string]: any }> => (await Request.get(`${GET_HOST}/api/config?timestamp=${new Date().getTime()}`, { headers: { authorization: GET_TOKEN() } })).data,
+    get: async (): Promise<{ [key: string]: any }> => {
+        if (RESTRICT_BRIDGE && RESTRICT_PLUGIN) {
+            const config = (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: GET_TOKEN } })).data;
+            const platform = ((config || {}).platforms || []).find((item: { [key: string]: any }) => ((item || {}).plugin_map || {}).plugin_name === RESTRICT_PLUGIN) || {};
+
+            delete platform.plugin_map;
+
+            return platform;
+        }
+
+        if (RESTRICT_BRIDGE) return (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: GET_TOKEN } })).data;
+
+        return (await Request.get(`${GET_HOST}/api/config?timestamp=${new Date().getTime()}`, { headers: { authorization: GET_TOKEN() } })).data;
+    },
 
     update: async (data: { [key: string]: any }): Promise<void> => {
+        if (RESTRICT_BRIDGE && RESTRICT_PLUGIN) {
+            const config = (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: GET_TOKEN } })).data;
+            const index = ((config || {}).platforms || []).findIndex((item: { [key: string]: any }) => ((item || {}).plugin_map || {}).plugin_name === RESTRICT_PLUGIN);
+
+            data.plugin_map = {
+                plugin_name: RESTRICT_PLUGIN,
+            };
+
+            if (index >= 0) {
+                config.platforms[index] = data;
+            }
+
+            (await Request.post(`${GET_HOST}/config/${RESTRICT_BRIDGE}`, config, { headers: { authorization: GET_TOKEN } }));
+            return;
+        }
+
+        if (RESTRICT_BRIDGE) {
+            (await Request.post(`${GET_HOST}/config/${RESTRICT_BRIDGE}`, data, { headers: { authorization: GET_TOKEN } }));
+            return;
+        }
+
         (await Request.post(`${GET_HOST}/api/config`, data, { headers: { authorization: GET_TOKEN() } }));
     },
 };
