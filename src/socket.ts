@@ -18,7 +18,9 @@
 
 import io from "socket.io-client";
 
-const SOCKET_URL = process.env.VUE_APP_SOCKET || "/";
+let SOCKET_URL = "/";
+
+if (typeof process !== "undefined") SOCKET_URL = process.env.VUE_APP_SOCKET || "/";
 
 interface EventRecord {
     event: string;

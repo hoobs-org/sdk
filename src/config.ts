@@ -18,11 +18,19 @@
 
 import Request from "axios";
 
-const API_URL = process.env.API_URL || process.env.VUE_APP_API || "";
+let API_URL = "";
+
+if (typeof process !== "undefined") API_URL = process.env.API_URL || process.env.VUE_APP_API || "";
 
 let GET_TOKEN: () => string = () => "";
 let SET_TOKEN: (token: string) => void = () => { /* null */ };
 let GET_HOST: string = API_URL;
+
+interface SetupToken {
+    token: string;
+    host: string;
+    port: number;
+}
 
 export default {
     token: {
@@ -51,6 +59,13 @@ export default {
         set(host: string, port?: number) {
             GET_HOST = `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}`;
         },
+    },
+
+    setup(token: string) {
+        const data:SetupToken = JSON.parse(atob(decodeURIComponent(token)));
+
+        GET_TOKEN = () => data?.token || "";
+        GET_HOST = `http://${data.host}:${data.port && data.port >= 1 && data.port <= 65535 ? data.port : 80}`;
     },
 
     get: async (): Promise<{ [key: string]: any }> => (await Request.get(`${GET_HOST}/api/config?timestamp=${new Date().getTime()}`, { headers: { authorization: GET_TOKEN() } })).data,
