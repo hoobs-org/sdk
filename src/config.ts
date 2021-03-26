@@ -136,12 +136,12 @@ export default {
                 config.platforms[index] = data;
             }
 
-            (await Request.post(`${GET_HOST}/config/${RESTRICT_BRIDGE}`, config, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
+            (await Request.post(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, config, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
             return;
         }
 
         if (RESTRICT_BRIDGE) {
-            (await Request.post(`${GET_HOST}/config/${RESTRICT_BRIDGE}`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
+            (await Request.post(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
             return;
         }
 
