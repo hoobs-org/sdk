@@ -110,7 +110,7 @@ export default {
 
     get: async (): Promise<{ [key: string]: any }> => {
         if (RESTRICT_BRIDGE && RESTRICT_PLUGIN) {
-            const config = (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: GET_TOKEN } })).data;
+            const config = (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
             const platform = ((config || {}).platforms || []).find((item: { [key: string]: any }) => ((item || {}).plugin_map || {}).plugin_name === RESTRICT_PLUGIN) || {};
 
             delete platform.plugin_map;
@@ -118,14 +118,14 @@ export default {
             return platform;
         }
 
-        if (RESTRICT_BRIDGE) return (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: GET_TOKEN } })).data;
+        if (RESTRICT_BRIDGE) return (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
 
-        return (await Request.get(`${GET_HOST}/api/config?timestamp=${new Date().getTime()}`, { headers: { authorization: GET_TOKEN() } })).data;
+        return (await Request.get(`${GET_HOST}/api/config?timestamp=${new Date().getTime()}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
     },
 
     update: async (data: { [key: string]: any }): Promise<void> => {
         if (RESTRICT_BRIDGE && RESTRICT_PLUGIN) {
-            const config = (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: GET_TOKEN } })).data;
+            const config = (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
             const index = ((config || {}).platforms || []).findIndex((item: { [key: string]: any }) => ((item || {}).plugin_map || {}).plugin_name === RESTRICT_PLUGIN);
 
             data.plugin_map = {
@@ -136,15 +136,15 @@ export default {
                 config.platforms[index] = data;
             }
 
-            (await Request.post(`${GET_HOST}/config/${RESTRICT_BRIDGE}`, config, { headers: { authorization: GET_TOKEN } }));
+            (await Request.post(`${GET_HOST}/config/${RESTRICT_BRIDGE}`, config, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
             return;
         }
 
         if (RESTRICT_BRIDGE) {
-            (await Request.post(`${GET_HOST}/config/${RESTRICT_BRIDGE}`, data, { headers: { authorization: GET_TOKEN } }));
+            (await Request.post(`${GET_HOST}/config/${RESTRICT_BRIDGE}`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
             return;
         }
 
-        (await Request.post(`${GET_HOST}/api/config`, data, { headers: { authorization: GET_TOKEN() } }));
+        (await Request.post(`${GET_HOST}/api/config`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
     },
 };
