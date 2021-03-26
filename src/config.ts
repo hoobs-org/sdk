@@ -103,8 +103,8 @@ export default {
             GET_TOKEN = () => data.token;
             GET_HOST = `http://${data.host}:${data.port && data.port >= 1 && data.port <= 65535 ? data.port : 80}`;
 
-            if (data.bridge) RESTRICT_BRIDGE = data?.bridge;
-            if (data.plugin) RESTRICT_PLUGIN = data?.plugin;
+            if (data.bridge) RESTRICT_BRIDGE = data.bridge;
+            if (data.plugin) RESTRICT_PLUGIN = data.plugin;
         }
     },
 
