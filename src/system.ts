@@ -48,6 +48,10 @@ export default async function System(): Promise<{ [key: string]: any }> {
         await Request.put(`${Config.host.get()}/system/reboot`, null, { headers: { authorization: Config.token.authorization } });
     };
 
+    results.shutdown = async (): Promise<void> => {
+        await Request.put(`${Config.host.get()}/system/shutdown`, null, { headers: { authorization: Config.token.authorization } });
+    };
+
     results.reset = async (): Promise<void> => {
         await Request.put(`${Config.host.get()}/system/reset`, null, { headers: { authorization: Config.token.authorization } });
     };
