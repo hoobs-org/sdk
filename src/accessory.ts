@@ -27,17 +27,7 @@ export default async function Accessory(bridge: string, id: string): Promise<{ [
     };
 
     if (results.type === "camera") {
-        results.stream = {
-            start: async (): Promise<string> => {
-                const filename = (await Request.post(`${Config.host.get()}/accessory/${bridge}/${id}/stream/start`, { headers: { authorization: Config.token.authorization } })).data;
-
-                return `${Config.host.get("streams")}/${filename}`;
-            },
-
-            stop: async (): Promise<void> => {
-                await Request.post(`${Config.host.get()}/accessory/${bridge}/${id}/stream/stop`, { headers: { authorization: Config.token.authorization } });
-            },
-        };
+        results.stream = () => `${Config.host.get()}/accessory/${bridge}/${id}/stream`;
 
         results.snapshot = async (): Promise<string | undefined> => {
             const { image } = (await Request.get(`${Config.host.get()}/accessory/${bridge}/${id}/snapshot`, { headers: { authorization: Config.token.authorization } })).data;
