@@ -27,7 +27,7 @@ export default async function Accessory(bridge: string, id: string): Promise<{ [
     };
 
     if (results.type === "camera") {
-        results.stream = () => `${Config.host.get()}/accessory/${bridge}/${id}/stream`;
+        if (results.supports_streaming) results.stream = () => `${Config.host.get()}/accessory/${bridge}/${id}/stream`;
 
         results.snapshot = async (): Promise<string | undefined> => {
             const { image } = (await Request.get(`${Config.host.get()}/accessory/${bridge}/${id}/snapshot`, { headers: { authorization: Config.token.authorization } })).data;
