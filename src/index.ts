@@ -85,3 +85,9 @@ export default {
         });
     },
 };
+
+if (typeof window !== "undefined" && typeof window.document !== "undefined") {
+    Object.defineProperty(window, "$hoobs", {
+        get: () => sdk,
+    });
+}

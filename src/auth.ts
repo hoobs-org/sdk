@@ -44,10 +44,6 @@ export default {
         return false;
     },
 
-    async link(vendor: string, username: string, password: string, verification?: string) {
-        return (await Request.post(`${Config.host.get()}/auth/vendor/${vendor}`, { username, password, verification }, { headers: { authorization: Config.token.authorization } })).data;
-    },
-
     async logout(): Promise<void> {
         await Request.get(`${Config.host.get()}/auth/logout`, { headers: { authorization: Config.token.authorization } });
 
