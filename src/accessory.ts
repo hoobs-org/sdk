@@ -29,7 +29,7 @@ export default async function Accessory(bridge: string, id: string): Promise<{ [
     if (results.type === "camera") {
         results.stream = {
             start: async (): Promise<string> => {
-                const filename = (await Request.get(`${Config.host.get()}/accessory/${bridge}/${id}/stream/start`, { headers: { authorization: Config.token.authorization } })).data;
+                const filename = (await Request.post(`${Config.host.get()}/accessory/${bridge}/${id}/stream/start`, { headers: { authorization: Config.token.authorization } })).data;
 
                 return `${Config.host.get("streams")}/${filename}`;
             },
