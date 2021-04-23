@@ -23,7 +23,13 @@ export default async function Plugin(bridge: string, identifier: string, action?
     data = data || {};
     data.bridge = bridge;
 
-    if (action && action !== "") return (await Request.post(`${Config.host.get()}/plugin/${encodeURIComponent(identifier)}/${action}`, data || {}, { headers: { authorization: Config.token.authorization } })).data;
+    let results: any;
 
-    return (await Request.post(`${Config.host.get()}/plugin/${encodeURIComponent(identifier)}`, data || {}, { headers: { authorization: Config.token.authorization } })).data;
+    if (action && action !== "") {
+        results = (await Request.post(`${Config.host.get()}/plugin/${encodeURIComponent(identifier)}/${action}`, data || {}, { headers: { authorization: Config.token.authorization } })).data;
+    } else {
+        results = (await Request.post(`${Config.host.get()}/plugin/${encodeURIComponent(identifier)}`, data || {}, { headers: { authorization: Config.token.authorization } })).data;
+    }
+
+    return results;
 }

@@ -21,7 +21,9 @@ import Config from "./config";
 
 export default {
     async current(): Promise<{ [key: string]: any }> {
-        return (await Request.get(`${Config.host.get()}/weather/current`, { headers: { authorization: Config.token.authorization } })).data;
+        const results = (await Request.get(`${Config.host.get()}/weather/current`, { headers: { authorization: Config.token.authorization } })).data;
+
+        return results;
     },
 
     async forecast(): Promise<{ [key: string]: any }[]> {

@@ -21,11 +21,15 @@ import Config from "./config";
 
 export default {
     async status(): Promise<string> {
-        return (await Request.get(`${Config.host.get()}/auth`, { headers: { authorization: Config.token.authorization } })).data.state;
+        const { state } = (await Request.get(`${Config.host.get()}/auth`, { headers: { authorization: Config.token.authorization } })).data;
+
+        return state;
     },
 
     async validate(): Promise<boolean> {
-        return (await Request.get(`${Config.host.get()}/auth/validate`, { headers: { authorization: Config.token.authorization } })).data.valid;
+        const { valid } = (await Request.get(`${Config.host.get()}/auth/validate`, { headers: { authorization: Config.token.authorization } })).data;
+
+        return valid;
     },
 
     async disable(): Promise<void> {

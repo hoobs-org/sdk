@@ -21,9 +21,13 @@ import Status from "./status";
 import Config from "./config";
 
 export async function Version(): Promise<string> {
-    return (await Request.get(`${Config.host.get()}`)).data.version;
+    const results = (await Request.get(`${Config.host.get()}`)).data.version;
+
+    return results;
 }
 
 export async function Latest(): Promise<string> {
-    return (await Status()).current;
+    const results = (await Status()).current;
+
+    return results;
 }
