@@ -29,7 +29,9 @@ export function Sleep(timeout: number): Promise<void> {
 
 export async function Wait(saftey?: number): Promise<string> {
     try {
-        return (await Request.get(`${Config.host.get()}`)).data.version;
+        const results = (await Request.get(`${Config.host.get()}`)).data.version;
+
+        return results;
     } catch (error) {
         if ((saftey || 0) > 50) throw error;
     }

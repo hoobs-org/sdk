@@ -20,5 +20,7 @@ import Request from "axios";
 import Config from "./config";
 
 export default async function Status(): Promise<{ [key: string]: any }> {
-    return (await Request.get(`${Config.host.get()}/status`, { headers: { authorization: Config.token.authorization } })).data;
+    const results = (await Request.get(`${Config.host.get()}/status`, { headers: { authorization: Config.token.authorization } })).data;
+
+    return results;
 }

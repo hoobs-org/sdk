@@ -38,11 +38,13 @@ export const Users = {
     },
 
     async add(username: string, password: string, name?: string, permissions?: { [key: string]: boolean }): Promise<UserRecord[]> {
-        return (await Request.put(`${Config.host.get()}/users`, {
+        const results = (await Request.put(`${Config.host.get()}/users`, {
             name: name || username,
             username,
             password,
             permissions,
         }, { headers: { authorization: Config.token.authorization } })).data;
+
+        return results;
     },
 };

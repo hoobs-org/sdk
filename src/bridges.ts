@@ -47,7 +47,9 @@ export interface BridgeRecord {
 
 export const Bridges = {
     async count(): Promise<number> {
-        return (await Request.get(`${Config.host.get()}/bridges/count`)).data.bridges;
+        const { bridges } = (await Request.get(`${Config.host.get()}/bridges/count`)).data;
+
+        return bridges;
     },
 
     async list(): Promise<BridgeRecord[]> {

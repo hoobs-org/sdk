@@ -118,9 +118,15 @@ export default {
             return platform;
         }
 
-        if (RESTRICT_BRIDGE) return (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
+        let results: any;
 
-        return (await Request.get(`${GET_HOST}/api/config?timestamp=${new Date().getTime()}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
+        if (RESTRICT_BRIDGE) {
+            results = (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
+        } else {
+            results = (await Request.get(`${GET_HOST}/api/config?timestamp=${new Date().getTime()}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
+        }
+
+        return results;
     },
 
     update: async (data: { [key: string]: any }): Promise<void> => {
