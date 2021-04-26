@@ -51,7 +51,7 @@ Program.command("sdk", { isDefault: true })
         execSync(`${join(root, "node_modules", ".bin", "tsc")}`, { cwd: root, stdio: "inherit" });
         execSync(`${join(root, "node_modules", ".bin", "webpack")} --mode=production`, { cwd: root, stdio: "inherit" });
 
-        if (command.pack) {
+        if (process.platform === "linux" && command.pack) {
             execSync("yarn pack", { cwd: root, stdio: "inherit" });
 
             if (existsSync(join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`))) unlinkSync(join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`))
