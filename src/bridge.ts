@@ -89,7 +89,7 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         if (!end || Number.isNaN(end)) return false;
         if (end < 1 || end > 65535) return false;
 
-        if (end > start) return false;
+        if (start > end) return false;
 
         (await Request.post(`${Config.host.get()}/bridge/${id}/ports`, { start, end }, { headers: { authorization: Config.token.authorization } }));
 
