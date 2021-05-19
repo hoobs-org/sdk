@@ -74,7 +74,7 @@ Program.command("publish")
         ]).then((result) => {
             if (result && result.confirm) {
                 execSync(`${join(root, "bin", "build")} sdk`, { cwd: root, stdio: ["inherit", "inherit", "inherit"] });
-                execSync("yarn publish --access public", { cwd: root, stdio: ["inherit", "inherit", "inherit"] });
+                execSync(`yarn publish --access public --new-version ${pjson.version}`, { cwd: root, stdio: ["inherit", "inherit", "inherit"] });
             }
         });
     });
