@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
  **************************************************************************************************/
 
-import Request from "axios";
+import Request from "./request";
 import Config from "./config";
 
 export default async function Location(query: string, count?: number): Promise<{ [key: string]: number | string }[]> {
