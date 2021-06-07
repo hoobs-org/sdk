@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
  **************************************************************************************************/
 
-import Request from "axios";
+import Request from "./request";
 import Config from "./config";
 
 export default async function Plugin(bridge: string, identifier: string, action?: string, data?: { [key: string]: any }): Promise<{ [key: string]: any }[]> {
