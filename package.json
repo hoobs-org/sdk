@@ -1,6 +1,6 @@
 {
     "name": "@hoobs/sdk",
-    "version": "4.4.6",
+    "version": "4.4.7",
     "description": "HOOBS SDK for building applications that talk with the HOOBS API.",
     "license": "GPL-3.0",
     "keywords": [
@@ -33,7 +33,7 @@
     "dependencies": {
         "axios": "^0.21.1",
         "sanitize-filename": "^1.6.3",
-        "socket.io-client": "^3.1.1"
+        "socket.io-client": "^4.1.2"
     },
     "devDependencies": {
         "@tsconfig/node10": "^1.0.7",
@@ -54,7 +54,7 @@
         "commander": "^7.1.0",
         "eslint": "^7.20.0",
         "eslint-config-airbnb-typescript": "^12.3.1",
-        "eslint-plugin-import": "^2.22.0",
+        "eslint-plugin-import": "^2.23.4",
         "eslint-plugin-jsx-a11y": "^6.3.1",
         "eslint-plugin-react": "^7.22.0",
         "eslint-plugin-react-hooks": "^4.1.2",
