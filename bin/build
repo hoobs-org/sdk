@@ -54,9 +54,9 @@ Program.command("sdk", { isDefault: true })
         if (process.platform === "linux" && command.pack) {
             execSync("yarn pack", { cwd: root, stdio: "inherit" });
 
-            if (existsSync(join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`))) unlinkSync(join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`))
+            if (existsSync(join(root, "../repo/npm", `hoobs-sdk-v${pjson.version}.tgz`))) unlinkSync(join(root, "../repo/npm", `hoobs-sdk-v${pjson.version}.tgz`))
 
-            execSync(`mv ${join(root, `hoobs-sdk-v${pjson.version}.tgz`)} ${join(root, "../builds", `hoobs-sdk-v${pjson.version}.tgz`)}`, { cwd: root, stdio: "inherit" });
+            execSync(`mv ${join(root, `hoobs-sdk-v${pjson.version}.tgz`)} ${join(root, "../repo/npm", `hoobs-sdk-v${pjson.version}.tgz`)}`, { cwd: root, stdio: "inherit" });
         }
     });
 
