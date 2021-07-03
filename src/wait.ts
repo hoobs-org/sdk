@@ -19,6 +19,8 @@
 import Request from "./request";
 import Config from "./config";
 
+const REQUEST_TIMEOUT = 1 * 1000;
+
 export function Sleep(timeout: number): Promise<void> {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -29,7 +31,11 @@ export function Sleep(timeout: number): Promise<void> {
 
 export async function Wait(saftey?: number): Promise<string> {
     try {
-        const results = (await Request.get(`${Config.host.get()}`)).data.version;
+        const results = (await Request({
+            method: "get",
+            url: `${Config.host.get()}`,
+            timeout: REQUEST_TIMEOUT,
+        })).data.version;
 
         return results;
     } catch (error) {
