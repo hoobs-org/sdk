@@ -1,6 +1,6 @@
 {
     "name": "@hoobs/sdk",
-    "version": "4.4.7",
+    "version": "4.4.11",
     "description": "HOOBS SDK for building applications that talk with the HOOBS API.",
     "license": "GPL-3.0",
     "keywords": [

@@ -72,13 +72,14 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         },
     };
 
-    results.update = async (display: string, autostart: number, pin?: string, username?: string, advertiser?: string): Promise<void> => {
+    results.update = async (display: string, autostart: number, pin?: string, username?: string, advertiser?: string, debugging?: boolean): Promise<void> => {
         (await Request.post(`${Config.host.get()}/bridge/${id}`, {
             display,
             autostart,
             pin,
             username,
             advertiser,
+            debugging,
         }, { headers: { authorization: Config.token.authorization } }));
     };
 

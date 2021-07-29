@@ -31,6 +31,9 @@ export interface BridgeRecord {
     autostart?: number;
     host?: string;
     service?: string;
+    advertiser?: string;
+    project?: string,
+    debugging?: boolean,
     status?: () => Promise<{ [key: string]: any }>;
     config?: { [key: string]: any };
     plugins?: () => Promise<{ [key: string]: any }[]> | string;
