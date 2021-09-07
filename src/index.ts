@@ -24,7 +24,6 @@ import Backup from "./backup";
 import Restore from "./restore";
 import System from "./system";
 import Hostname from "./hostname";
-import Extentions from "./extentions";
 import Plugin from "./plugin";
 import Plugins from "./plugins";
 import Repository from "./repository";
@@ -58,7 +57,6 @@ const sdk = {
     restore: Restore,
     system: System,
     hostname: Hostname,
-    extentions: Extentions,
     plugin: Plugin,
     plugins: Plugins,
     bridges: Bridges,
