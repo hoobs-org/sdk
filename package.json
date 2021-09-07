@@ -26,10 +26,6 @@
     "engines": {
         "node": ">=10.17.0"
     },
-    "scripts": {
-        "build": "bin/build --lint",
-        "release": "bin/build publish"
-    },
     "dependencies": {
         "axios": "^0.21.1",
         "sanitize-filename": "^1.6.3",

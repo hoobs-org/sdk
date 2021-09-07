@@ -1,0 +1,24 @@
+#!/bin/bash
+
+version() {
+    echo `node -e 'console.log(require("./package.json").version)'`
+}
+
+case $1 in
+    version )  version
+               ;;
+
+    lint )     make lint
+               ;;
+
+    build )    make sdk
+               ;;
+
+    publish )  make publish
+               ;;
+
+    clean )    make clean
+               ;;
+
+    * )        ;;
+esac
