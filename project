@@ -5,20 +5,23 @@ version() {
 }
 
 case $1 in
-    version )  version
-               ;;
+    version )
+        version
+        ;;
 
-    lint )     make lint
-               ;;
+    lint )
+        make lint
+        ;;
 
-    build )    make sdk
-               ;;
+    build )
+        make sdk
+        ;;
 
-    publish )  make publish
-               ;;
+    publish )
+        make publish
+        ;;
 
-    clean )    make clean
-               ;;
-
-    * )        ;;
+    clean )
+        make clean
+        ;;
 esac
