@@ -16,10 +16,9 @@ paths:
 	mkdir -p lib
 
 publish: lint paths
-	npm adduser
 	node_modules/.bin/tsc
 	node_modules/.bin/webpack --mode=production
-	npm publish --access public
+	../node_modules/.bin/yarn publish --access public --new-version $(shell project version)
 
 clean:
 	rm -fR lib
