@@ -63,7 +63,7 @@ export const Bridges = {
         return response.data || [];
     },
 
-    async add(name: string, port: number, pin?: string, username?: string, advertiser?: string): Promise<boolean> {
+    async add(name: string, port: number, pin?: string, username?: string, advertiser?: string, plugin?: string): Promise<boolean> {
         const current = (await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (!port || Number.isNaN(port)) return false;
@@ -77,6 +77,7 @@ export const Bridges = {
             pin,
             username,
             advertiser,
+            plugin,
         }, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (results.findIndex((n: any) => n.id === Sanitize(name)) >= 0) return true;
