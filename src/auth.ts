@@ -53,4 +53,16 @@ export default {
 
         Config.token.authorization = "";
     },
+
+    get terminal() {
+        return {
+            async reset(): Promise<void> {
+                await Request.delete(`${Config.host.get()}/auth/terminal/reset`, { headers: { authorization: Config.token.authorization } });
+            },
+
+            async chpasswd(username: string, password: string): Promise<void> {
+                await Request.post(`${Config.host.get()}/auth/terminal/chpasswd`, { username, password }, { headers: { authorization: Config.token.authorization } });
+            },
+        };
+    },
 };
