@@ -24,6 +24,10 @@ import Backup from "./backup";
 import Restore from "./restore";
 import System from "./system";
 import Hostname from "./hostname";
+import Network from "./network";
+import Networks from "./networks";
+import Wireless from "./wireless";
+import Hotspot from "./hotspot";
 import Plugin from "./plugin";
 import Plugins from "./plugins";
 import Repository from "./repository";
@@ -57,6 +61,10 @@ const sdk = {
     restore: Restore,
     system: System,
     hostname: Hostname,
+    network: Network,
+    networks: Networks,
+    wireless: Wireless,
+    hotspot: Hotspot,
     plugin: Plugin,
     plugins: Plugins,
     bridges: Bridges,
