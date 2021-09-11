@@ -23,9 +23,7 @@ export default {
     async status(): Promise<{ [key: string]: any }[]> {
         const response = await Request.get(`${Config.host.get()}/network`, { headers: { authorization: Config.token.authorization } });
 
-        if (!Array.isArray(response.data)) return [];
-
-        return response.data || [];
+        return response.data || {};
     },
 
     async up(iface: string): Promise<void> {

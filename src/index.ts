@@ -27,7 +27,6 @@ import Hostname from "./hostname";
 import Network from "./network";
 import Networks from "./networks";
 import Wireless from "./wireless";
-import Hotspot from "./hotspot";
 import Plugin from "./plugin";
 import Plugins from "./plugins";
 import Repository from "./repository";
@@ -64,7 +63,6 @@ const sdk = {
     network: Network,
     networks: Networks,
     wireless: Wireless,
-    hotspot: Hotspot,
     plugin: Plugin,
     plugins: Plugins,
     bridges: Bridges,
