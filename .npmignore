@@ -11,3 +11,4 @@ CHANGELOG.md
 tsconfig.json
 *.spec.ts
 *.tgz
+builds/
