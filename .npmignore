@@ -3,6 +3,7 @@ bin/
 lib/*.tgz
 node_modules/
 src/
+builds/
 .editorconfig
 .eslintrc
 .gitignore
