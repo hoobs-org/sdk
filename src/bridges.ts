@@ -37,9 +37,6 @@ export interface BridgeRecord {
     status?: () => Promise<{ [key: string]: any }>;
     config?: { [key: string]: any };
     plugins?: () => Promise<{ [key: string]: any }[]> | string;
-    running?: boolean;
-    uptime?: number;
-    setup_id?: string;
     plugin?: { [key: string]: any };
     rename?: () => Promise<void>;
     accessories?: () => Promise<{ [key: string]: any }[]>;
@@ -58,12 +55,12 @@ export const Bridges = {
         return bridges;
     },
 
-    async list(extended?: boolean): Promise<BridgeRecord[]> {
-        const response = await Request.get(`${Config.host.get()}/bridges${extended ? "?extended=true" : ""}`, { headers: { authorization: Config.token.authorization } });
+    async list(): Promise<BridgeRecord[]> {
+        const response = await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } });
 
         if (!Array.isArray(response.data)) return [];
 
-        return (response.data || []);
+        return response.data || [];
     },
 
     async add(name: string, port: number, pin?: string, username?: string, advertiser?: string, plugin?: string): Promise<boolean> {
