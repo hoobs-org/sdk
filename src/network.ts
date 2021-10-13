@@ -21,7 +21,7 @@ import Config from "./config";
 
 export default {
     async status(): Promise<{ [key: string]: any }[]> {
-        const response = await Request.get(`${Config.host.get()}/network`, { headers: { authorization: Config.token.authorization } });
+        const response = <any>(await Request.get(`${Config.host.get()}/network`, { headers: { authorization: Config.token.authorization } }));
 
         return response.data || {};
     },

@@ -31,11 +31,11 @@ export function Sleep(timeout: number): Promise<void> {
 
 export async function Wait(saftey?: number): Promise<string> {
     try {
-        const results = (await Request({
+        const results = (<{ [key: string]: any }>(await Request({
             method: "get",
             url: `${Config.host.get()}`,
             timeout: REQUEST_TIMEOUT,
-        })).data.version;
+        })).data).version;
 
         return results;
     } catch (error) {

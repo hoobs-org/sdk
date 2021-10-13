@@ -20,7 +20,7 @@ import Request from "./request";
 import Config from "./config";
 
 export default async function Accessory(bridge: string, id: string): Promise<{ [key: string]: any }> {
-    const results = (await Request.get(`${Config.host.get()}/accessory/${bridge}/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
+    const results: { [key: string]: any } = <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/accessory/${bridge}/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
     results.set = async (characteristic: string, data: { [key: string]: any }): Promise<void> => {
         (await Request.put(`${Config.host.get()}/accessory/${bridge}/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } }));
@@ -30,7 +30,7 @@ export default async function Accessory(bridge: string, id: string): Promise<{ [
         if (results.supports_streaming) results.stream = () => `${Config.host.get()}/accessory/${bridge}/${id}/stream`;
 
         results.snapshot = async (): Promise<string | undefined> => {
-            const { image } = (await Request.get(`${Config.host.get()}/accessory/${bridge}/${id}/snapshot`, { headers: { authorization: Config.token.authorization } })).data;
+            const { image } = <any>(await Request.get(`${Config.host.get()}/accessory/${bridge}/${id}/snapshot`, { headers: { authorization: Config.token.authorization } })).data;
 
             if (!image) return undefined;
 

@@ -20,7 +20,7 @@ import Request from "./request";
 import Config from "./config";
 
 export default async function Status(): Promise<{ [key: string]: any }> {
-    const results = (await Request.get(`${Config.host.get()}/status`, { headers: { authorization: Config.token.authorization } })).data;
+    const results = <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/status`, { headers: { authorization: Config.token.authorization } })).data;
 
     return results;
 }

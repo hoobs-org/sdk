@@ -27,17 +27,17 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
     if (!name || name === "") return undefined;
     if (id === "hub") return undefined;
 
-    const current = (await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
+    const current = <any>(await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
     const index = current.findIndex((n: any) => n.id === id);
 
     if (index === -1) return undefined;
 
     const results = current[index];
 
-    results.status = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
+    results.status = async (): Promise<{ [key: string]: any }> => <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
     results.config = {
-        get: async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/config/${id}`, { headers: { authorization: Config.token.authorization } })).data,
+        get: async (): Promise<{ [key: string]: any }> => <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/config/${id}`, { headers: { authorization: Config.token.authorization } })).data,
 
         update: async (data: { [key: string]: any }): Promise<void> => {
             (await Request.post(`${Config.host.get()}/config/${id}`, data, { headers: { authorization: Config.token.authorization } }));
@@ -54,19 +54,19 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         },
 
         install: async (identifier: string): Promise<boolean> => {
-            if (((await Request.put(`${Config.host.get()}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
+            if ((<{ [key: string]: any }>(await Request.put(`${Config.host.get()}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
 
             return false;
         },
 
         upgrade: async (identifier: string): Promise<boolean> => {
-            if (((await Request.post(`${Config.host.get()}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
+            if ((<{ [key: string]: any }>(await Request.post(`${Config.host.get()}/plugins/${id}/${identifier}`, null, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
 
             return false;
         },
 
         uninstall: async (identifier: string): Promise<boolean> => {
-            if (((await Request.delete(`${Config.host.get()}/plugins/${id}/${identifier}`, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
+            if ((<{ [key: string]: any }>(await Request.delete(`${Config.host.get()}/plugins/${id}/${identifier}`, { headers: { authorization: Config.token.authorization } })).data || {}).success) return true;
 
             return false;
         },
@@ -117,7 +117,7 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         (await Request.post(`${Config.host.get()}/bridge/${id}/restart`, null, { headers: { authorization: Config.token.authorization } }));
     };
 
-    results.cache = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/cache/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+    results.cache = async (): Promise<{ [key: string]: any }> => <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/cache/${id}`, { headers: { authorization: Config.token.authorization } })).data;
 
     results.purge = async (uuid?: string): Promise<void> => {
         if (uuid) {
@@ -128,13 +128,13 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
     };
 
     results.export = async (): Promise<string> => {
-        const { filename } = (await Request.get(`${Config.host.get()}/bridge/${id}/export`, { headers: { authorization: Config.token.authorization } })).data;
+        const { filename } = <any>(await Request.get(`${Config.host.get()}/bridge/${id}/export`, { headers: { authorization: Config.token.authorization } })).data;
 
         return `${Config.host.get("backups")}/${filename}`;
     };
 
     results.remove = async (): Promise<boolean> => {
-        const updated = (await Request.delete(`${Config.host.get()}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data || [];
+        const updated = <any>(await Request.delete(`${Config.host.get()}/bridge/${id}`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (updated.findIndex((n: any) => n.id === id) >= 0) return false;
 

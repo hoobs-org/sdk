@@ -20,14 +20,14 @@ import Request from "./request";
 import Config from "./config";
 
 export default async function Room(id: string): Promise<{ [key: string]: any }> {
-    const results = (await Request.get(`${Config.host.get()}/room/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
+    const results = <any>(await Request.get(`${Config.host.get()}/room/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
     results.set = async (characteristic: string, data: any): Promise<void> => {
         (await Request.put(`${Config.host.get()}/room/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } }));
     };
 
     results.remove = async (): Promise<boolean> => {
-        const result = (await Request.delete(`${Config.host.get()}/room/${id}`, { headers: { authorization: Config.token.authorization } })).data;
+        const result = <any>(await Request.delete(`${Config.host.get()}/room/${id}`, { headers: { authorization: Config.token.authorization } })).data;
 
         if (!result || result.error) return false;
 

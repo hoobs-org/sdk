@@ -21,7 +21,7 @@ import Config from "./config";
 import { UserRecord } from "./users";
 
 export default async function User(id: number): Promise<UserRecord> {
-    const results: UserRecord = (await Request.get(`${Config.host.get()}/users/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
+    const results: UserRecord = <UserRecord>(await Request.get(`${Config.host.get()}/users/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
     results.update = async (username: string, password: string, name?: string, permissions?: { [key: string]: boolean }): Promise<void> => {
         (await Request.post(`${Config.host.get()}/users/${id}`, {

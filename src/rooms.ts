@@ -45,7 +45,7 @@ export const Rooms = {
     },
 
     async add(name: string, sequence?: number): Promise<boolean> {
-        const results = (await Request.put(`${Config.host.get()}/room`, {
+        const results = <any>(await Request.put(`${Config.host.get()}/room`, {
             name,
             sequence: sequence || 0,
         }, { headers: { authorization: Config.token.authorization } })).data || {};

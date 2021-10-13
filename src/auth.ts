@@ -21,13 +21,13 @@ import Config from "./config";
 
 export default {
     async status(): Promise<string> {
-        const { state } = (await Request.get(`${Config.host.get()}/auth`, { headers: { authorization: Config.token.authorization } })).data;
+        const { state } = <any>(await Request.get(`${Config.host.get()}/auth`, { headers: { authorization: Config.token.authorization } })).data;
 
         return state;
     },
 
     async validate(): Promise<boolean> {
-        const { valid } = (await Request.get(`${Config.host.get()}/auth/validate`, { headers: { authorization: Config.token.authorization } })).data;
+        const { valid } = <any>(await Request.get(`${Config.host.get()}/auth/validate`, { headers: { authorization: Config.token.authorization } })).data;
 
         return valid;
     },
@@ -37,7 +37,7 @@ export default {
     },
 
     async login(username: string, password: string, remember?: boolean): Promise<boolean> {
-        const { token } = (await Request.post(`${Config.host.get()}/auth/logon`, { username, password, remember })).data;
+        const { token } = <any>(await Request.post(`${Config.host.get()}/auth/logon`, { username, password, remember })).data;
 
         if (token) {
             Config.token.authorization = token;

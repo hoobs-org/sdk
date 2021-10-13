@@ -21,7 +21,7 @@ import Config from "./config";
 
 export default {
     async execute(): Promise<string> {
-        const { filename } = (await Request.get(`${Config.host.get()}/system/backup`, { headers: { authorization: Config.token.authorization } })).data;
+        const { filename } = <any>(await Request.get(`${Config.host.get()}/system/backup`, { headers: { authorization: Config.token.authorization } })).data;
 
         return `${Config.host.get("backups")}/${filename}`;
     },

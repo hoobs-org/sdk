@@ -50,7 +50,7 @@ export interface BridgeRecord {
 
 export const Bridges = {
     async count(): Promise<number> {
-        const { bridges } = (await Request.get(`${Config.host.get()}/bridges/count`)).data;
+        const { bridges } = <any>(await Request.get(`${Config.host.get()}/bridges/count`)).data;
 
         return bridges;
     },
@@ -64,14 +64,14 @@ export const Bridges = {
     },
 
     async add(name: string, port: number, pin?: string, username?: string, advertiser?: string, plugin?: string): Promise<boolean> {
-        const current = (await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
+        const current = <any>(await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (!port || Number.isNaN(port)) return false;
         if (port < 1 || port > 65535) return false;
         if (current.findIndex((n: any) => n.port === port) >= 0) return false;
         if (current.findIndex((n: any) => n.id === Sanitize(name)) >= 0) return false;
 
-        const results = (await Request.put(`${Config.host.get()}/bridges`, {
+        const results = <any>(await Request.put(`${Config.host.get()}/bridges`, {
             name,
             port,
             pin,

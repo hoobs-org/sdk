@@ -21,7 +21,7 @@ import Status from "./status";
 import Config from "./config";
 
 export async function Version(): Promise<string> {
-    const results = (await Request.get(`${Config.host.get()}`)).data.version;
+    const results = (<{ [key: string]: any }>(await Request.get(`${Config.host.get()}`)).data).version;
 
     return results;
 }

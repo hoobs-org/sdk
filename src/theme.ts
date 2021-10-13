@@ -116,7 +116,7 @@ export interface Theme {
 
 export const Themes = {
     async get(name: string): Promise<Theme> {
-        const results = (await Request.get(`${Config.host.get()}/theme/${name}`, { headers: { authorization: Config.token.authorization } })).data;
+        const results = <any>(await Request.get(`${Config.host.get()}/theme/${name}`, { headers: { authorization: Config.token.authorization } })).data;
 
         return results;
     },
@@ -130,7 +130,7 @@ export const Themes = {
 
         form.append("file", image);
 
-        const results = (await Request.post(`${Config.host.get()}/themes/backdrop`, form, { headers: { authorization: Config.token.authorization } })).data.filename;
+        const results = (<{ [key: string]: any }>(await Request.post(`${Config.host.get()}/themes/backdrop`, form, { headers: { authorization: Config.token.authorization } })).data).filename;
 
         return results;
     },

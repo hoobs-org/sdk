@@ -20,20 +20,20 @@ import Request from "./request";
 import Config from "./config";
 
 export default async function System(): Promise<{ [key: string]: any }> {
-    const results = (await Request.get(`${Config.host.get()}/system`, { headers: { authorization: Config.token.authorization } })).data || {};
+    const results = <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/system`, { headers: { authorization: Config.token.authorization } })).data || {};
 
-    results.cpu = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/system/cpu`, { headers: { authorization: Config.token.authorization } })).data;
+    results.cpu = async (): Promise<{ [key: string]: any }> => <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/system/cpu`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.memory = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/system/memory`, { headers: { authorization: Config.token.authorization } })).data;
+    results.memory = async (): Promise<{ [key: string]: any }> => <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/system/memory`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.network = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/system/network`, { headers: { authorization: Config.token.authorization } })).data;
+    results.network = async (): Promise<{ [key: string]: any }> => <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/system/network`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.filesystem = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/system/filesystem`, { headers: { authorization: Config.token.authorization } })).data;
+    results.filesystem = async (): Promise<{ [key: string]: any }> => <any>(await Request.get(`${Config.host.get()}/system/filesystem`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.activity = async (): Promise<{ [key: string]: any }> => (await Request.get(`${Config.host.get()}/system/activity`, { headers: { authorization: Config.token.authorization } })).data;
+    results.activity = async (): Promise<{ [key: string]: any }> => <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/system/activity`, { headers: { authorization: Config.token.authorization } })).data;
 
     results.temp = async (): Promise<{ [key: string]: any } | undefined> => {
-        const info = (await Request.get(`${Config.host.get()}/system/temp`, { headers: { authorization: Config.token.authorization } })).data;
+        const info = <any>(await Request.get(`${Config.host.get()}/system/temp`, { headers: { authorization: Config.token.authorization } })).data;
 
         if (info.main === -1) return undefined;
 

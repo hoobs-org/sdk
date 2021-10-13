@@ -110,7 +110,7 @@ export default {
 
     get: async (): Promise<{ [key: string]: any }> => {
         if (RESTRICT_BRIDGE && RESTRICT_PLUGIN) {
-            const config = (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
+            const config = <any>(await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
             const platform = ((config || {}).platforms || []).find((item: { [key: string]: any }) => ((item || {}).plugin_map || {}).plugin_name === RESTRICT_PLUGIN) || {};
 
             delete platform.plugin_map;
@@ -131,7 +131,7 @@ export default {
 
     update: async (data: { [key: string]: any }): Promise<void> => {
         if (RESTRICT_BRIDGE && RESTRICT_PLUGIN) {
-            const config = (await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
+            const config = <any>(await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
             const index = ((config || {}).platforms || []).findIndex((item: { [key: string]: any }) => ((item || {}).plugin_map || {}).plugin_name === RESTRICT_PLUGIN);
 
             data.plugin_map = {
