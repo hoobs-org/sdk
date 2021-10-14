@@ -40,6 +40,12 @@ export default async function System(): Promise<{ [key: string]: any }> {
         return info;
     };
 
+    results.updates = async (): Promise<{ [key: string]: any }> => {
+        const status = <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/status/updates`, { headers: { authorization: Config.token.authorization } })).data;
+
+        return status;
+    };
+
     results.upgrade = async (): Promise<void> => {
         await Request.post(`${Config.host.get()}/system/upgrade`, null, { headers: { authorization: Config.token.authorization } });
     };
