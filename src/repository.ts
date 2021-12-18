@@ -43,13 +43,37 @@ export default {
     async details(identifier: string): Promise<{ [key: string]: any }> {
         if (!identifier || identifier === "") return {};
 
-        const response = <any>(await Request.get(`https://plugins.hoobs.org/api/plugin/${identifier}`)).data || {};
+        const response = <any>(await Request.get(`https://plugins.hoobs.org/api/${identifier}`)).data || {};
+
+        return response.results;
+    },
+
+    async readme(identifier: string): Promise<string> {
+        if (!identifier || identifier === "") return "";
+
+        const response = <any>(await Request.get(`https://plugins.hoobs.org/api/${identifier}/readme`)).data || {};
+
+        return response.results;
+    },
+
+    async description(identifier: string): Promise<string> {
+        if (!identifier || identifier === "") return "";
+
+        const response = <any>(await Request.get(`https://plugins.hoobs.org/api/${identifier}/description`)).data || {};
+
+        return response.results;
+    },
+
+    async dependencies(identifier: string): Promise<{ [key: string]: any }> {
+        if (!identifier || identifier === "") return {};
+
+        const response = <any>(await Request.get(`https://plugins.hoobs.org/api/${identifier}/dependencies`)).data || {};
 
         return response.results;
     },
 
     async reviews(identifier: string, skip: number, limit: number): Promise<{ [key: string]: any }> {
-        const response = <any>(await Request.get(`https://plugins.hoobs.org/api/reviews/${identifier}?skip=${skip}&limit=${limit}`)).data || {};
+        const response = <any>(await Request.get(`https://plugins.hoobs.org/api/${identifier}/reviews?skip=${skip}&limit=${limit}`)).data || {};
 
         return {
             results: response.results || [],
