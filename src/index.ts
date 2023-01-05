@@ -16,66 +16,72 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.                          *
  **************************************************************************************************/
 
+import Accessories from "./accessories";
+import Accessory from "./accessory";
 import Auth from "./auth";
-import User from "./user";
-import Config from "./config";
-import Status from "./status";
 import Backup from "./backup";
-import Restore from "./restore";
-import System from "./system";
+import Bridge from "./bridge";
+import Config from "./config";
+import Dates from "./dates";
 import Hostname from "./hostname";
+import Location from "./location";
 import Network from "./network";
 import Networks from "./networks";
-import Wireless from "./wireless";
 import Plugin from "./plugin";
 import Plugins from "./plugins";
 import Repository from "./repository";
-import Bridge from "./bridge";
-import Accessories from "./accessories";
-import Accessory from "./accessory";
-import Location from "./location";
-import Weather from "./weather";
-import Socket from "./socket";
-import Dates from "./dates";
+import Restore from "./restore";
 import Room from "./room";
+import Socket from "./socket";
+import Status from "./status";
+import System from "./system";
+import User from "./user";
+import Weather from "./weather";
+import Wireless from "./wireless";
 
-import { Themes } from "./theme";
+import { BlueZ } from "./blue-z";
 import { Bridges } from "./bridges";
-import { Rooms } from "./rooms";
 import { Log } from "./log";
+import { Rooms } from "./rooms";
+import { Themes } from "./theme";
+import { Thread } from "./thread";
 import { Users } from "./users";
 import { Version, Latest } from "./version";
+import { Zigbee } from "./zigbee";
 
 const sdk = {
-    version: Version,
-    dates: Dates,
-    latest: Latest,
-    auth: Auth,
-    users: Users,
-    user: User,
-    config: Config,
-    log: Log,
-    status: Status,
-    backup: Backup,
-    restore: Restore,
-    system: System,
-    hostname: Hostname,
-    network: Network,
-    networks: Networks,
-    wireless: Wireless,
-    plugin: Plugin,
-    plugins: Plugins,
-    bridges: Bridges,
-    bridge: Bridge,
     accessories: Accessories,
     accessory: Accessory,
-    rooms: Rooms,
-    room: Room,
-    theme: Themes,
-    location: Location,
-    repository: Repository,
-    weather: Weather,
+    auth: Auth,
+    backup: Backup,
+    blueZ: BlueZ,
+    bridge: Bridge,
+    bridges: Bridges,
+    config: Config,
+    dates: Dates,
+    hostname: Hostname,
     io: Socket,
+    latest: Latest,
+    location: Location,
+    log: Log,
+    network: Network,
+    networks: Networks,
+    plugin: Plugin,
+    plugins: Plugins,
+    repository: Repository,
+    restore: Restore,
+    room: Room,
+    rooms: Rooms,
+    status: Status,
+    system: System,
+    theme: Themes,
+    thread: Thread,
+    user: User,
+    users: Users,
+    version: Version,
+    weather: Weather,
+    wireless: Wireless,
+    zigbee: Zigbee,
 };
 
 export default {
