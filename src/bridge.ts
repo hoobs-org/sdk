@@ -21,6 +21,55 @@ import Config from "./config";
 import Sanitize from "./sanitize";
 import { BridgeRecord } from "./bridges";
 
+export enum CommunicationTechnology {
+    Matter = "matter",
+    Homebridge = "homebridge",
+}
+
+export type ZigbeeToMQTTConfig = {
+    mqtt: {
+        base_topic: string;
+        server: string;
+        ca: string;
+        key: string;
+        cert: string;
+        user: string;
+        password: string;
+        client_id: string;
+        reject_unauthorized: boolean;
+        keepalive: number;
+        version: number;
+        disable_qos: boolean;
+    },
+    defaults: {
+        exclude: boolean;
+        excluded_keys: string[];
+        values: {
+            property: string;
+            exclude: string[];
+            include: string[];
+        }[]
+    },
+    exclude_grouped_devices: boolean;
+    devices: [
+        {
+            id: string;
+            exclude: boolean;
+            excluded_keys: string[];
+            values: {
+                property: string;
+                include: string[];
+                exclude: string[];
+            }[]
+            experimental: string[];
+        },
+    ],
+    platform: string;
+    plugin_map: {
+        plugin_name: string;
+    }
+};
+
 export default async function Bridge(name: string): Promise<BridgeRecord | undefined> {
     const id = Sanitize(name);
 
@@ -139,6 +188,32 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         if (updated.findIndex((n: any) => n.id === id) >= 0) return false;
 
         return true;
+    };
+
+    results.communicationtechnology = {
+        get: async (): Promise<CommunicationTechnology | undefined> => {
+            const data = <{ technology: string | undefined }>(await Request.get(`${Config.host.get()}/bridge/${id}/communicationtechnology`, { headers: { authorization: Config.token.authorization } })).data;
+            if (!data || !data.technology) {
+                return undefined;
+            }
+            return data.technology === "matter" ? CommunicationTechnology.Matter : CommunicationTechnology.Homebridge;
+        },
+        set: async (technology: CommunicationTechnology) => {
+            await Request.put(`${Config.host.get()}/bridge/${id}/communicationtechnology`, {
+                technology,
+            }, { headers: { authorization: Config.token.authorization } });
+        },
+    };
+
+    results.zigbeeToMqtt = {
+        config: {
+            load: async (): Promise<ZigbeeToMQTTConfig> => <ZigbeeToMQTTConfig>(
+                await Request.get(`${Config.host.get()}/${id}/zigbee/config`, { headers: { authorization: Config.token.authorization } })).data || {},
+            save: async (newConfig: ZigbeeToMQTTConfig) => <{ sucess: boolean; message?: string; }>(
+                await Request.post(`${Config.host.get()}/${id}/zigbee/config`, newConfig || {}, {
+                    headers: { authorization: Config.token.authorization },
+                })).data,
+        },
     };
 
     return results;
