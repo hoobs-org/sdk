@@ -4,14 +4,12 @@ import Config from "./config";
 export interface BlueZStatusRecord {
     version: string;
     version_firmware: string;
-    running: Boolean
+    running: boolean;
     message: string;
-  }
+}
 
 export const BlueZ = {
-    status: async () => {
-        return <BlueZStatusRecord>(await Request.get(`${Config.host.get()}/bluez`, { headers: { authorization: Config.token.authorization } })).data || {}
-    },
+    status: async () => <BlueZStatusRecord>(await Request.get(`${Config.host.get()}/bluez`, { headers: { authorization: Config.token.authorization } })).data || {},
     start: async (): Promise<void> => {
         (await Request.post(`${Config.host.get()}/bluez/start`, null, { headers: { authorization: Config.token.authorization } }));
     },
@@ -20,5 +18,5 @@ export const BlueZ = {
     },
     restart: async (): Promise<void> => {
         (await Request.post(`${Config.host.get()}/bluez/restart`, null, { headers: { authorization: Config.token.authorization } }));
-    }
-}
+    },
+};

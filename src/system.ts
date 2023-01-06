@@ -66,5 +66,13 @@ export default async function System(): Promise<{ [key: string]: any }> {
         await Request.delete(`${Config.host.get()}/cache/purge`, { headers: { authorization: Config.token.authorization } });
     };
 
+    results.firmware = async (): Promise<{ [key: string]: any }> => (await <{ [key: string]: any }>(Request.get(
+        `${Config.host.get()}/system/firmware`, { headers: { authorization: Config.token.authorization } },
+    ))).data || {};
+
+    results.ethernet = async (): Promise<void> => {
+        await Request.get(`${Config.host.get()}/system/ethernet`, { headers: { authorization: Config.token.authorization } });
+    };
+
     return results;
 }

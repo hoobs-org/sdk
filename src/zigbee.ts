@@ -4,14 +4,12 @@ import Config from "./config";
 export interface ZigbeeStatusRecord {
     version: string;
     version_firmware: string;
-    running: Boolean
+    running: boolean;
     message: string;
-  }
+}
 
 export const Zigbee = {
-    status: async () => {
-        return <ZigbeeStatusRecord>(await Request.get(`${Config.host.get()}/zigbee`, { headers: { authorization: Config.token.authorization } })).data || {}
-    },
+    status: async () => <ZigbeeStatusRecord>(await Request.get(`${Config.host.get()}/zigbee`, { headers: { authorization: Config.token.authorization } })).data || {},
     start: async (): Promise<void> => {
         (await Request.post(`${Config.host.get()}/zigbee/start`, null, { headers: { authorization: Config.token.authorization } }));
     },
@@ -20,5 +18,5 @@ export const Zigbee = {
     },
     restart: async (): Promise<void> => {
         (await Request.post(`${Config.host.get()}/zigbee/restart`, null, { headers: { authorization: Config.token.authorization } }));
-    }
-}
+    },
+};
