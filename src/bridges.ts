@@ -71,7 +71,7 @@ export const Bridges = {
         return response.data || [];
     },
 
-    async add(name: string, port: number, pin?: string, username?: string, advertiser?: string, protocol?: string, plugin?: string): Promise<boolean> {
+    async add(name: string, port: number, pin?: string, username?: string, advertiser?: string, plugin?: string, protocol?: string): Promise<boolean> {
         const current = <any>(await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (!port || Number.isNaN(port)) return false;
