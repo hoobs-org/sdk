@@ -19,7 +19,7 @@
 import Request from "./request";
 import Config from "./config";
 import Sanitize from "./sanitize";
-import { CommunicationTechnology, ZigbeeToMQTTConfig } from "./bridge";
+import { ZigbeeToMQTTConfig } from "./bridge";
 
 export interface BridgeRecord {
     id: string;
@@ -33,6 +33,7 @@ export interface BridgeRecord {
     host?: string;
     service?: string;
     advertiser?: string;
+    protocol?: string;
     project?: string,
     debugging?: boolean,
     status?: () => Promise<{ [key: string]: any }>;
@@ -47,10 +48,6 @@ export interface BridgeRecord {
     purge?: () => Promise<void>;
     cache?: () => Promise<{ [key: string]: any }>;
     remove?: () => Promise<boolean>;
-    communicationtechnology: {
-        get: () => Promise<CommunicationTechnology>;
-        set: (technology: CommunicationTechnology) => Promise<void>
-    };
     zigbeeToMqtt: {
         config: {
             load: () => Promise<ZigbeeToMQTTConfig>;
@@ -74,7 +71,7 @@ export const Bridges = {
         return response.data || [];
     },
 
-    async add(name: string, port: number, pin?: string, username?: string, advertiser?: string, plugin?: string): Promise<boolean> {
+    async add(name: string, port: number, pin?: string, username?: string, advertiser?: string, protocol?: string, plugin?: string): Promise<boolean> {
         const current = <any>(await Request.get(`${Config.host.get()}/bridges`, { headers: { authorization: Config.token.authorization } })).data || [];
 
         if (!port || Number.isNaN(port)) return false;
@@ -88,6 +85,7 @@ export const Bridges = {
             pin,
             username,
             advertiser,
+            protocol,
             plugin,
         }, { headers: { authorization: Config.token.authorization } })).data || [];
 
@@ -96,7 +94,7 @@ export const Bridges = {
         return false;
     },
 
-    async import(file: Blob, name: string, port: number, pin?: string, username?: string, advertiser?: string): Promise<void> {
+    async import(file: Blob, name: string, port: number, pin?: string, username?: string, advertiser?: string, protocol?: string): Promise<void> {
         const form = new FormData();
 
         form.append("file", file);
@@ -106,6 +104,7 @@ export const Bridges = {
         if (pin && pin !== "") form.append("pin", pin);
         if (username && username !== "") form.append("username", username);
         if (advertiser && advertiser !== "") form.append("advertiser", advertiser);
+        if (protocol && protocol !== "") form.append("protocol", protocol);
 
         (await Request.post(`${Config.host.get()}/bridges/import`, form, { headers: { authorization: Config.token.authorization } }));
     },

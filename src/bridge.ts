@@ -21,11 +21,6 @@ import Config from "./config";
 import Sanitize from "./sanitize";
 import { BridgeRecord } from "./bridges";
 
-export enum CommunicationTechnology {
-    Matter = "matter",
-    Homebridge = "homebridge",
-}
-
 export type ZigbeeToMQTTConfig = {
     mqtt: {
         base_topic: string;
@@ -121,7 +116,7 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         },
     };
 
-    results.update = async (display: string, autostart: number, pin?: string, username?: string, advertiser?: string, debugging?: boolean): Promise<void> => {
+    results.update = async (display: string, autostart: number, pin?: string, username?: string, advertiser?: string, protocol?: string, debugging?: boolean): Promise<void> => {
         (await Request.post(`${Config.host.get()}/bridge/${id}`, {
             display,
             autostart,
@@ -129,6 +124,7 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
             username,
             advertiser,
             debugging,
+            protocol,
         }, { headers: { authorization: Config.token.authorization } }));
     };
 
@@ -188,21 +184,6 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         if (updated.findIndex((n: any) => n.id === id) >= 0) return false;
 
         return true;
-    };
-
-    results.communicationtechnology = {
-        get: async (): Promise<CommunicationTechnology | undefined> => {
-            const data = <{ technology: string | undefined }>(await Request.get(`${Config.host.get()}/bridge/${id}/communicationtechnology`, { headers: { authorization: Config.token.authorization } })).data;
-            if (!data || !data.technology) {
-                return undefined;
-            }
-            return data.technology === "matter" ? CommunicationTechnology.Matter : CommunicationTechnology.Homebridge;
-        },
-        set: async (technology: CommunicationTechnology) => {
-            await Request.put(`${Config.host.get()}/bridge/${id}/communicationtechnology`, {
-                technology,
-            }, { headers: { authorization: Config.token.authorization } });
-        },
     };
 
     results.zigbeeToMqtt = {
