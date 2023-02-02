@@ -1,0 +1,22 @@
+{
+  "name": "hoobs-sdk-client",
+  "version": "1.0.0",
+  "main": "dist",
+  "scripts": {
+    "postinstall": "yarn run duplicate && yarn run transpile",
+    "duplicate": "cd ./node_modules && rm -rf @hoobs/sdk-transpiled && mkdir -p @hoobs/sdk-transpiled && cp -r @hoobs/sdk/lib @hoobs/sdk-transpiled/lib && cp -r @hoobs/sdk/node_modules @hoobs/sdk-transpiled/node_modules && cp @hoobs/sdk/package.json @hoobs/sdk-transpiled/package.json && cp @hoobs/sdk/yarn.lock @hoobs/sdk-transpiled/yarn.lock",
+    "transpile": "cd ./node_modules && .bin/babel @hoobs/sdk/lib/* --out-dir @hoobs/sdk-transpiled/lib/ --plugins=@babel/plugin-transform-modules-commonjs"
+  },
+  "dependencies": {
+    "yargs": "^17.6.2",
+    "@hoobs/sdk": "link:.."
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.12",
+    "@babel/plugin-transform-modules-commonjs": "^7.20.11",
+    "typescript": "^4.9.4",
+    "@types/node": "^18.11.18",
+    "@types/yargs": "^17.0.19"
+  }
+}
