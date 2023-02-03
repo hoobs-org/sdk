@@ -37,6 +37,75 @@ interface SetupToken {
     plugin?: string;
 }
 
+export interface ZigbeeToMQTTConfig {
+    mqtt: MqttConfiguration;
+    log?: LogConfiguration;
+    defaults?: BaseDeviceConfiguration;
+    experimental?: string[];
+    devices?: DeviceConfiguration[];
+    exclude_grouped_devices?: boolean;
+}
+
+interface LogConfiguration extends Record<string, unknown> {
+    debug_as_info?: boolean;
+    mqtt_publish?: string;
+}
+
+interface MqttConfiguration extends Record<string, unknown> {
+    base_topic: string;
+    server: string;
+    ca?: string;
+    key?: string;
+    cert?: string;
+    user?: string;
+    password?: string;
+    client_id?: string;
+    reject_unauthorized?: boolean;
+    keepalive?: number;
+    version?: number;
+    disable_qos?: boolean;
+}
+
+interface BaseDeviceConfiguration extends Record<string, unknown> {
+    exclude?: boolean;
+    excluded_keys?: string[];
+    excluded_endpoints?: string[];
+    values?: PropertyValueConfiguration[];
+    converters?: unknown;
+    experimental?: string[];
+    ignore_availability?: boolean;
+    ignore_z2m_online?: boolean;
+}
+
+interface DeviceConfiguration extends BaseDeviceConfiguration {
+    id: string;
+    included_keys?: string[];
+    exposes?: ExposesEntry[];
+}
+
+interface PropertyValueConfiguration extends Record<string, unknown> {
+    property: string;
+    include?: string[];
+    exclude?: string[];
+}
+
+interface ExposesEntry {
+    type: string;
+    name?: string;
+    endpoint?: string;
+    access?: number;
+    property?: string;
+    unit?: string;
+    values?: string[];
+    value_off?: MqttValue;
+    value_on?: MqttValue;
+    value_step?: number;
+    value_min?: number;
+    value_max?: number;
+}
+
+declare type MqttValue = string | boolean | number;
+
 function search() {
     const query: { [key: string]: string | undefined }[] = ((window.location.search || "").replace("?", "").split("&").map((entry) => {
         const pairs = entry.split("=");
@@ -154,7 +223,7 @@ export default {
         (await Request.post(`${GET_HOST}/api/config`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
     },
 
-    getZigbee: async (id?: string): Promise<{ [key: string]: any }> => {
+    getZigbee: async (id?: string): Promise<ZigbeeToMQTTConfig> => {
         let results: any;
 
         if (RESTRICT_BRIDGE ?? id) {
@@ -164,7 +233,7 @@ export default {
         return results;
     },
 
-    updateZigbee: async (data: { [key: string]: any }, id?: string): Promise<void> => {
+    updateZigbee: async (data: ZigbeeToMQTTConfig, id?: string): Promise<void> => {
         if (RESTRICT_BRIDGE || id) {
             (await Request.post(`${GET_HOST}/api/config/zigbee/${RESTRICT_BRIDGE ?? id}`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
         }

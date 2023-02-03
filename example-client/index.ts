@@ -5,6 +5,7 @@ import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
 
 import { readFileSync } from "fs";
+import {ZigbeeToMQTTConfig} from "../lib/bridge";
 
 let token: string = ""
 hoobs.sdk.config.token.get(() => { return token })
@@ -65,7 +66,7 @@ const getBridge = (bridgeId?: string) => {
 } 
 
 const updateBridgeZigbeeConfig = (bridgeId: string, zigbeeConfig: { [key: string]: any }) => {
-    hoobs.sdk.config.updateZigbee(zigbeeConfig, bridgeId)
+    hoobs.sdk.config.updateZigbee(zigbeeConfig as ZigbeeToMQTTConfig, bridgeId)
         .then(() => console.log("zigbee config update successful"))
         .catch(error => console.log("zigbee config update failed", error));
 } 
