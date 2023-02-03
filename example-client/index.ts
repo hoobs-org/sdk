@@ -5,7 +5,7 @@ import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
 
 import { readFileSync } from "fs";
-import {ZigbeeToMQTTConfig} from "../lib/bridge";
+import { ZigbeeToMQTTConfig } from "../lib/bridge";
 
 let token: string = ""
 hoobs.sdk.config.token.get(() => { return token })
@@ -66,14 +66,22 @@ const getBridge = (bridgeId?: string) => {
 } 
 
 const updateBridgeZigbeeConfig = (bridgeId: string, zigbeeConfig: { [key: string]: any }) => {
-    hoobs.sdk.config.updateZigbee(zigbeeConfig as ZigbeeToMQTTConfig, bridgeId)
-        .then(() => console.log("zigbee config update successful"))
+    hoobs.sdk.bridge(bridgeId)
+        .then(bridge => {
+            bridge?.config?.updateZigbee(zigbeeConfig as ZigbeeToMQTTConfig)
+                .then(() => console.log("zigbee config update successful"))
+                .catch(error => console.log("zigbee config update failed", error));
+        })
         .catch(error => console.log("zigbee config update failed", error));
 } 
 
-const getBridgeZigbeeConfig = (bridgeId?: string) => {
-    hoobs.sdk.config.getZigbee(bridgeId)
-        .then(config => console.log(config))
+const getBridgeZigbeeConfig = (bridgeId: string) => {
+    hoobs.sdk.bridge(bridgeId)
+        .then(bridge => {
+            bridge?.config?.getZigbee()
+                .then(config => console.log(config))
+                .catch(error => console.error(error))
+        })
         .catch(error => console.error(error))
 } 
 
@@ -141,7 +149,8 @@ yargs(hideBin(process.argv))
     .command("get-zigbee <id>", "Get zigbee config of bridges.", (yargs) => {
         return yargs
         .positional("id", {
-            type: "string"
+            type: "string",
+            demandOption: true
         })
     }, (argv) => {
         getBridgeZigbeeConfig(argv.id);
