@@ -6,29 +6,44 @@ yarn install
 ```
 
 ## Usage
-This client currently supports setting the communication protocol of a bridge(update \<bridge-id\> --protocol matter|homekit) and getting a list of all/one bridge(s) (get [bridge-id]).
-Before each command you will have to set these arguments: 
+This client currently supports the following commands:
+- setting the communication protocol of a bridge &nbsp; ```update \<bridge-id\> --protocol matter|homekit```
+- getting a list of all/one bridge(s) &nbsp; ```get [bridge-id]```
+- setting the zigbee2mqtt config of a bridge (pass in a path to a JSON file) &nbsp; ```update \<bridge-id\> --zigbee-config <path-to-config.json>```
+- getting the zigbee2mqtt config of a bridge &nbsp; ```get-zigbee \<bridge-id\>```
 
-```--host``` - system where hoobsd is running
+For each command you will have to set these arguments or leave them to their defaults: 
 
-```--port``` - port where hoobsd is running
+```--host``` - address of system where hoobsd is running (default: localhost)
 
-```--username``` - your username for hoobsd
+```--port``` - port where hoobsd is running (default: 80)
 
-```--password``` - your password for hoobsd
+```--username``` - your username for hoobsd (default: admin)
+
+```--password``` - your password for hoobsd (default: admin)
 
 ### Examples
 Setting protocol of a bridge:
 <pre>
-node . --host localhost --port 80 --username admin --password admin update test --protocol <b>matter</b>
+node . update test --protocol <b>matter</b>
 </pre>
 
 Getting all bridges:
 <pre>
-node . --host localhost --port 80 --username admin --password admin get
+node . get
 </pre>
 
 Getting a specific bridge:
 <pre>
-node . --host localhost --port 80 --username admin --password admin get test
+node . get test
+</pre>
+
+Setting zigbee2mqtt config of a bridge:
+<pre>
+node . update test --zigbee-config ./zigbee-config.json
+</pre>
+
+Getting zigbee2mqtt config of a bridge:
+<pre>
+node . get-zigbee test
 </pre>

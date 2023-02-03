@@ -153,4 +153,20 @@ export default {
 
         (await Request.post(`${GET_HOST}/api/config`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
     },
+
+    getZigbee: async (id?: string): Promise<{ [key: string]: any }> => {
+        let results: any;
+
+        if (RESTRICT_BRIDGE ?? id) {
+            results = (await Request.get(`${GET_HOST}/api/config/zigbee/${RESTRICT_BRIDGE ?? id}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
+        }
+
+        return results;
+    },
+
+    updateZigbee: async (data: { [key: string]: any }, id?: string): Promise<void> => {
+        if (RESTRICT_BRIDGE || id) {
+            (await Request.post(`${GET_HOST}/api/config/zigbee/${RESTRICT_BRIDGE ?? id}`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
+        }
+    },
 };
