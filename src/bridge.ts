@@ -21,49 +21,74 @@ import Config from "./config";
 import Sanitize from "./sanitize";
 import { BridgeRecord } from "./bridges";
 
-export type ZigbeeToMQTTConfig = {
-    mqtt: {
-        base_topic: string;
-        server: string;
-        ca: string;
-        key: string;
-        cert: string;
-        user: string;
-        password: string;
-        client_id: string;
-        reject_unauthorized: boolean;
-        keepalive: number;
-        version: number;
-        disable_qos: boolean;
-    },
-    defaults: {
-        exclude: boolean;
-        excluded_keys: string[];
-        values: {
-            property: string;
-            exclude: string[];
-            include: string[];
-        }[]
-    },
-    exclude_grouped_devices: boolean;
-    devices: [
-        {
-            id: string;
-            exclude: boolean;
-            excluded_keys: string[];
-            values: {
-                property: string;
-                include: string[];
-                exclude: string[];
-            }[]
-            experimental: string[];
-        },
-    ],
-    platform: string;
-    plugin_map: {
-        plugin_name: string;
-    }
-};
+export interface ZigbeeToMQTTConfig {
+    mqtt: MqttConfiguration;
+    log?: LogConfiguration;
+    defaults?: BaseDeviceConfiguration;
+    experimental?: string[];
+    devices?: DeviceConfiguration[];
+    exclude_grouped_devices?: boolean;
+}
+
+interface LogConfiguration extends Record<string, unknown> {
+    debug_as_info?: boolean;
+    mqtt_publish?: string;
+}
+
+interface MqttConfiguration extends Record<string, unknown> {
+    base_topic: string;
+    server: string;
+    ca?: string;
+    key?: string;
+    cert?: string;
+    user?: string;
+    password?: string;
+    client_id?: string;
+    reject_unauthorized?: boolean;
+    keepalive?: number;
+    version?: number;
+    disable_qos?: boolean;
+}
+
+interface BaseDeviceConfiguration extends Record<string, unknown> {
+    exclude?: boolean;
+    excluded_keys?: string[];
+    excluded_endpoints?: string[];
+    values?: PropertyValueConfiguration[];
+    converters?: unknown;
+    experimental?: string[];
+    ignore_availability?: boolean;
+    ignore_z2m_online?: boolean;
+}
+
+interface DeviceConfiguration extends BaseDeviceConfiguration {
+    id: string;
+    included_keys?: string[];
+    exposes?: ExposesEntry[];
+}
+
+interface PropertyValueConfiguration extends Record<string, unknown> {
+    property: string;
+    include?: string[];
+    exclude?: string[];
+}
+
+interface ExposesEntry {
+    type: string;
+    name?: string;
+    endpoint?: string;
+    access?: number;
+    property?: string;
+    unit?: string;
+    values?: string[];
+    value_off?: MqttValue;
+    value_on?: MqttValue;
+    value_step?: number;
+    value_min?: number;
+    value_max?: number;
+}
+
+declare type MqttValue = string | boolean | number;
 
 export default async function Bridge(name: string): Promise<BridgeRecord | undefined> {
     const id = Sanitize(name);
@@ -85,6 +110,12 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
 
         update: async (data: { [key: string]: any }): Promise<void> => {
             (await Request.post(`${Config.host.get()}/config/${id}`, data, { headers: { authorization: Config.token.authorization } }));
+        },
+
+        getZigbee: async (): Promise<ZigbeeToMQTTConfig> => <ZigbeeToMQTTConfig>(await Request.get(`${Config.host.get()}/config/zigbee/${id}`, { headers: { authorization: Config.token.authorization } })).data,
+
+        updateZigbee: async (data: ZigbeeToMQTTConfig): Promise<void> => {
+            (await Request.post(`${Config.host.get()}/config/zigbee/${id}`, data, { headers: { authorization: Config.token.authorization } }));
         },
     };
 
@@ -184,17 +215,6 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         if (updated.findIndex((n: any) => n.id === id) >= 0) return false;
 
         return true;
-    };
-
-    results.zigbeeToMqtt = {
-        config: {
-            load: async (): Promise<ZigbeeToMQTTConfig> => <ZigbeeToMQTTConfig>(
-                await Request.get(`${Config.host.get()}/${id}/zigbee/config`, { headers: { authorization: Config.token.authorization } })).data || {},
-            save: async (newConfig: ZigbeeToMQTTConfig) => <{ sucess: boolean; message?: string; }>(
-                await Request.post(`${Config.host.get()}/${id}/zigbee/config`, newConfig || {}, {
-                    headers: { authorization: Config.token.authorization },
-                })).data,
-        },
     };
 
     return results;

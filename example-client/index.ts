@@ -4,6 +4,9 @@ import Bridge from "@hoobs/sdk-transpiled/lib/bridge";
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
 
+import { readFileSync } from "fs";
+import { ZigbeeToMQTTConfig } from "../lib/bridge";
+
 let token: string = ""
 hoobs.sdk.config.token.get(() => { return token })
 hoobs.sdk.config.token.set((aToken: string) => { token = aToken })
@@ -62,36 +65,78 @@ const getBridge = (bridgeId?: string) => {
     }
 } 
 
+const updateBridgeZigbeeConfig = (bridgeId: string, zigbeeConfig: { [key: string]: any }) => {
+    hoobs.sdk.bridge(bridgeId)
+        .then(bridge => {
+            bridge?.config?.updateZigbee(zigbeeConfig as ZigbeeToMQTTConfig)
+                .then(() => console.log("zigbee config update successful"))
+                .catch(error => console.log("zigbee config update failed", error));
+        })
+        .catch(error => console.log("zigbee config update failed", error));
+} 
+
+const getBridgeZigbeeConfig = (bridgeId: string) => {
+    hoobs.sdk.bridge(bridgeId)
+        .then(bridge => {
+            bridge?.config?.getZigbee()
+                .then(config => console.log(config))
+                .catch(error => console.error(error))
+        })
+        .catch(error => console.error(error))
+} 
+
 yargs(hideBin(process.argv))
     .option("host", {
         type: "string",
-        demandOption: true
+        demandOption: true,
+        default: "localhost"
     })
     .option("port", {
         type: "string",
-        demandOption: true
+        demandOption: true,
+        default: 80
     })
     .option("username", {
         type: "string",
-        demandOption: true
+        demandOption: true,
+        default: "admin"
     })
     .option("password", {
         type: "string",
-        demandOption: true
+        demandOption: true,
+        default: "admin"
     })
     .command("update <id>", "Update bridge with the given id", (yargs) => {
         return yargs
-        .positional("id", {
-            type: "string",
-            demandOption: true,
-        })
-        .option("protocol", {
-            type: "string",
-            demandOption: true,
-            choices: ["matter", "homekit"]
-        });
+            .positional("id", {
+                type: "string",
+                demandOption: true,
+            })
+            .option("protocol", {
+                type: "string",
+                choices: ["matter", "homekit"]
+            })
+            .option("zigbee-config", {
+                type: "string",
+                description: "A Path to JSON file containing the zigbee2mqtt plugin config.",
+            })
+            .check((argv) => {
+                if (!argv["protocol"] && !argv["zigbee-config"]) {
+                    throw(new Error("Provide at least one option"))
+                }
+                return true;
+            })
     }, (argv) => {
-        updateBridge(argv.id, argv.protocol);
+        if (argv.zigbeeConfig) {
+            try {
+                const buffer = readFileSync(argv.zigbeeConfig)
+                updateBridgeZigbeeConfig(argv.id, JSON.parse(buffer.toString()))
+            } catch (_) {
+                throw(new Error("Can't read JSON at the given path."))
+            }
+        }
+
+        if (argv.protocol) updateBridge(argv.id, argv.protocol);
     })
     .command("get [id]", "Get bridges", (yargs) => {
         return yargs
@@ -100,6 +145,15 @@ yargs(hideBin(process.argv))
         })
     }, (argv) => {
         getBridge(argv.id);
+    })
+    .command("get-zigbee <id>", "Get zigbee config of bridges.", (yargs) => {
+        return yargs
+        .positional("id", {
+            type: "string",
+            demandOption: true
+        })
+    }, (argv) => {
+        getBridgeZigbeeConfig(argv.id);
     })
     .demandCommand(1)
     .middleware(loginMiddleware)

@@ -19,7 +19,6 @@
 import Request from "./request";
 import Config from "./config";
 import Sanitize from "./sanitize";
-import { ZigbeeToMQTTConfig } from "./bridge";
 
 export interface BridgeRecord {
     id: string;
@@ -48,12 +47,6 @@ export interface BridgeRecord {
     purge?: () => Promise<void>;
     cache?: () => Promise<{ [key: string]: any }>;
     remove?: () => Promise<boolean>;
-    zigbeeToMqtt: {
-        config: {
-            load: () => Promise<ZigbeeToMQTTConfig>;
-            save: (config: ZigbeeToMQTTConfig) => Promise<void>;
-        }
-    }
 }
 
 export const Bridges = {
