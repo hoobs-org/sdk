@@ -6,7 +6,7 @@ import { hideBin } from "yargs/helpers"
 
 import { readFileSync } from "fs";
 import { ZigbeeToMQTTConfig } from "../lib/bridge";
-import { Devices } from "../lib/zigbee2mqtt/ws-client";
+import { DeviceObserver } from "../lib/zigbee2mqtt/ws-client";
 
 let token: string = ""
 hoobs.sdk.config.token.get(() => { return token })
@@ -86,8 +86,13 @@ const getBridgeZigbeeConfig = (bridgeId: string) => {
         .catch(error => console.error(error))
 } 
 
-const deviceObserver = (devices: Devices) => {
-    console.log("new devices:\n", devices);
+const deviceObserver: DeviceObserver = {
+    onDevices(devices) {
+        console.log("new devices:\n", devices);
+    },
+    onClose(reason) {
+        console.log("connection closed reason: ", reason);
+    },
 }
 
 yargs(hideBin(process.argv))

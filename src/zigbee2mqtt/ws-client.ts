@@ -1,6 +1,7 @@
 import ReconnectingWebSocket from "reconnecting-websocket";
 import keyBy from "lodash/keyBy";
 import WebSocket from "ws";
+import { CloseEvent } from "reconnecting-websocket/dist/events";
 import {
     TouchLinkDevice, Device, IEEEEAddress, GraphI,
 } from "./types";
@@ -8,6 +9,8 @@ import {
     sanitizeGraph, randomString, stringifyWithPreservingUndefinedAsNull,
 } from "./utils";
 import config from "../config";
+
+const UNAUTHORIZED_ERROR_CODE = 4401;
 
 interface Message {
     topic: string;
@@ -31,7 +34,10 @@ interface Callable {
     (reason?: any): void;
 }
 
-export type DeviceObserver = (devices: Devices) => void;
+export type DeviceObserver = {
+    onDevices: (devices: Devices) => void;
+    onClose: (reason: Error) => void;
+};
 
 class Api {
     socket?: ReconnectingWebSocket;
@@ -93,7 +99,6 @@ class Api {
         if (!this.socket || this.socket?.readyState === this.socket?.CLOSED) {
             this.connect();
         }
-        console.debug("Calling API", { topic, payload });
 
         if (topic.startsWith("bridge/request/")) {
             const transaction = `${this.transactionRndPrefix}-${this.transactionNumber += 1}`;
@@ -111,29 +116,26 @@ class Api {
             return promise;
         }
         this.socket?.send(stringifyWithPreservingUndefinedAsNull({ topic, payload }));
-        if (this.requests.size === 0) {
-            this.socket?.close();
-        }
+        this.closeSocketIfUnused();
         return Promise.resolve();
     };
 
-    urlProvider = async () => {
+    urlProvider = () => {
         const hoobsURL = new URL(config.host.get());
-        return `ws://${hoobsURL.hostname}:8081`;
+        return `ws://${hoobsURL.hostname}:8081?token=${config.zigbeeToMqttToken}`;
     };
 
     connect(): void {
         this.socket = new ReconnectingWebSocket(this.urlProvider, [], { WebSocket });
         this.socket.addEventListener("message", this.onMessage);
+        this.socket.addEventListener("close", this.onClose);
     }
 
     private processBridgeMessage = (data: Message): void => {
-        console.log(data);
-
         if (data.topic === "bridge/devices" && this.deviceObservers.size !== 0) {
             const devices = keyBy(data.payload as unknown as Device[], "ieee_address");
             this.deviceObservers.forEach((observer) => {
-                observer(devices);
+                observer.onDevices(devices);
             });
         } else if (data.topic.startsWith("bridge/response/")) {
             this.resolvePromises(data.payload as unknown as ResponseWithStatus);
@@ -172,6 +174,26 @@ class Api {
         } catch (e) {
             console.error(event.data);
         }
+    };
+
+    private onClose = (e: CloseEvent): void => {
+        let errorString: string;
+        if (e.code === UNAUTHORIZED_ERROR_CODE) {
+            errorString = "Unauthorized";
+        } else {
+            errorString = "Connection closed";
+        }
+        const error = new Error(errorString);
+
+        this.deviceObservers.forEach((observer) => {
+            observer.onClose(error);
+        });
+        this.requests.forEach(([, reject, timeout]) => {
+            clearTimeout(timeout);
+            reject(error);
+        });
+
+        this.socket?.close();
     };
 }
 export default new Api();
