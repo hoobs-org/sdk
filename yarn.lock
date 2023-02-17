@@ -157,6 +157,11 @@
   resolved "https://registry.yarnpkg.com/@types/component-emitter/-/component-emitter-1.2.10.tgz#ef5b1589b9f16544642e473db5ea5639107ef3ea"
   integrity sha512-bsjleuRKWmGqajMerkzox19aGbscQX5rmmvvXl3wlIp5gMG1HgkiwPxsN5p070fBDKTNSPgojVbuY1+HWMbFhg==
 
+"@types/d3-force@^3.0.4":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@types/d3-force/-/d3-force-3.0.4.tgz#2d50bd2b695f709797e1745644f6bc123e6e5f5a"
+  integrity sha512-q7xbVLrWcXvSBBEoadowIUJ7sRpS1yvgMWnzHJggFy5cUZBq2HZL5k/pBSm0GdYWS1vs5/EDwMjSKF55PDY4Aw==
+
 "@types/debug@^4.1.5":
   version "4.1.7"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.7.tgz#7cc0ea761509124709b8b2d1090d8f6c17aadb82"
@@ -855,6 +860,30 @@ cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
+
+"d3-dispatch@1 - 3":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-3.0.1.tgz#5fc75284e9c2375c36c839411a0cf550cbfc4d5e"
+  integrity sha512-rzUyPU/S7rwUflMyLc1ETDeBj0NRuHKKAcvukozwhshr6g6c5d8zh4c2gQjY2bZ0dXeGLWc1PF174P2tVvKhfg==
+
+d3-force@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/d3-force/-/d3-force-3.0.0.tgz#3e2ba1a61e70888fe3d9194e30d6d14eece155c4"
+  integrity sha512-zxV/SsA+U4yte8051P4ECydjD/S+qeYtnaIyAs9tgHCqfguma/aAQDjo85A9Z6EKhBirHRJHXIgJUlffT4wdLg==
+  dependencies:
+    d3-dispatch "1 - 3"
+    d3-quadtree "1 - 3"
+    d3-timer "1 - 3"
+
+"d3-quadtree@1 - 3":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/d3-quadtree/-/d3-quadtree-3.0.1.tgz#6dca3e8be2b393c9a9d514dabbd80a92deef1a4f"
+  integrity sha512-04xDrxQTDTCFwP5H6hRhsRcb9xxv2RzkcsygFzmkSIOJy3PeRJP7sNk3VRIbKXcog561P9oU0/rVH6vDROAgUw==
+
+"d3-timer@1 - 3":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-3.0.1.tgz#6284d2a2708285b1abb7e201eda4380af35e63b0"
+  integrity sha512-ndfJ/JxxMd3nw31uyKoY2naivF+r29V+Lc0svZxe1JvvIRmi8hUsrMvdOwgS1o6uBHmiz91geQ0ylPP0aj1VUA==
 
 damerau-levenshtein@^1.0.6:
   version "1.0.7"
@@ -2267,6 +2296,11 @@ rechoir@^0.7.0:
   dependencies:
     resolve "^1.9.0"
 
+reconnecting-websocket@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/reconnecting-websocket/-/reconnecting-websocket-4.4.0.tgz#3b0e5b96ef119e78a03135865b8bb0af1b948783"
+  integrity sha512-D2E33ceRPga0NvTDhJmphEgJ7FUYF0v4lr1ki0csq06OdlxKfugGzN0dSkxM/NfqCxYELK4KcaTOUOjTV6Dcng==
+
 regenerator-runtime@^0.13.4:
   version "0.13.9"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.9.tgz#8925742a98ffd90814988d7566ad30ca3b263b52"
@@ -2878,6 +2912,11 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
+
+ws@^8.12.1:
+  version "8.12.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.12.1.tgz#c51e583d79140b5e42e39be48c934131942d4a8f"
+  integrity sha512-1qo+M9Ba+xNhPB+YTWUlK6M17brTut5EXbcBaMRN5pH5dFrXz7lzz1ChFSUq3bOUl8yEvSenhHmYUNJxFzdJew==
 
 ws@~7.4.2:
   version "7.4.6"

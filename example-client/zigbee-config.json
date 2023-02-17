@@ -2,15 +2,8 @@
     "mqtt": {                           
         "base_topic": "zigbee2mqtt",      
         "server": "mqtt://localhost:1883",
-        "ca": "example ca",    
-        "key": "example key",             
-        "cert": "example certificate",    
-        "user": "exampleuser",            
-        "password": "example password",   
-        "client_id": "test",              
-        "reject_unauthorized": true,      
-        "keepalive": 60,                  
-        "version": 4,                     
+        "keepalive": 60,
+        "version": 4,
         "disable_qos": false  
     }            
 }
