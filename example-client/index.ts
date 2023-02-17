@@ -6,6 +6,7 @@ import { hideBin } from "yargs/helpers"
 
 import { readFileSync } from "fs";
 import { ZigbeeToMQTTConfig } from "../lib/bridge";
+import { Devices } from "../lib/zigbee2mqtt/ws-client";
 
 let token: string = ""
 hoobs.sdk.config.token.get(() => { return token })
@@ -85,6 +86,10 @@ const getBridgeZigbeeConfig = (bridgeId: string) => {
         .catch(error => console.error(error))
 } 
 
+const deviceObserver = (devices: Devices) => {
+    console.log("new devices:\n", devices);
+}
+
 yargs(hideBin(process.argv))
     .option("host", {
         type: "string",
@@ -155,6 +160,60 @@ yargs(hideBin(process.argv))
     }, (argv) => {
         getBridgeZigbeeConfig(argv.id);
     })
+    .command("zigbee", "Zigbee Commands", (yargs) => {
+        return yargs
+        .command("start [pairing-time]", "start zigbee pairing", (yargs) => {
+            return yargs.option("pairing-time", { type: "number" })
+        }, (argv) => {
+            hoobs.sdk.zigbee.start(argv.pairingTime)
+            .then(() => console.log("zigbee started"))
+            .catch((rejection) => console.log(rejection));
+        })
+        .command("stop", "stop zigbee pairing", {}, () => {
+            hoobs.sdk.zigbee.stop()
+            .then(() => console.log("zigbee stopped"))
+            .catch((rejection) => console.log(rejection));
+        })
+        .command("get-devices", "get zigbee devices", {}, () => {
+            hoobs.sdk.zigbee.startObservingDevices(deviceObserver);
+        })
+        .command("ota-update <device-id>", "ota update device", (yargs) => {
+            return yargs.option("device-id", { type: "string", demandOption: true })
+        }, (argv) => {
+            hoobs.sdk.zigbee.update(argv.deviceId)
+            .then(() => console.log("update started"))
+            .catch((rejection) => console.log(rejection));
+        })
+        .command("touchlink-scan", "scan for touchlink devices", {}, () => {
+            hoobs.sdk.zigbee.scanTouchlink()
+            .then((touchlinkDevices) => console.log(touchlinkDevices))
+            .catch((rejection) => console.log(rejection));
+        })
+        .command("get-network-map", "get zigbee network map", {}, () => {
+            hoobs.sdk.zigbee.networkMap()
+            .then((map) => console.log(map))
+            .catch((rejection) => console.log(rejection));
+        })
+        .command("set-channel <channel>", "set zigbee channel", (yargs) => {
+            return yargs.option("channel", { type: "number", demandOption: true })
+        }, (argv) => {
+            hoobs.sdk.zigbee.setZigbeeChannel(argv.channel)
+            .then(() => console.log("channel set"))
+            .catch((rejection) => console.log(rejection));
+        })
+        .command("set-transmit-power <power>", "set zigbee transmit power", (yargs) => {
+            return yargs.option("power", { type: "number", demandOption: true })
+        }, (argv) => {
+            hoobs.sdk.zigbee.setZigbeeTransmitPower(argv.power)
+            .then(() => console.log("transmit power set"))
+            .catch((rejection) => console.log(rejection));
+        })
+        .demandCommand(1)
+    })
     .demandCommand(1)
     .middleware(loginMiddleware)
     .parse();
+
+process.on('SIGINT', function() {
+    hoobs.sdk.zigbee.stopObservingDevices(deviceObserver);
+});

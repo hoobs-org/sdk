@@ -20,7 +20,8 @@
         "moduleResolution": "node"
     },
     "include": [
-        "src/"
+        "src/",
+        "src/zigbee2mqtt"
     ],
     "exclude": [
         "**/*.test.js",

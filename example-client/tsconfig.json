@@ -9,8 +9,12 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "moduleResolution": "node",
+    "sourceMap": true
   },
   "exclude": [
       "node_modules"
-  ]
+  ],
+  "include": [
+    "index.ts",
+  ],
 }
