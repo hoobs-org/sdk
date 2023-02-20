@@ -40,8 +40,8 @@ const updateBridge = (bridgeId: string, protocol: string) => {
                             aBridge.pin,
                             aBridge.username,
                             aBridge.advertiser,
+                            aBridge.debugging,
                             protocol,
-                            aBridge.debugging
                         )
                         .then(console.log("update successful"))
                         .catch(error => console.log("update failed", error))
