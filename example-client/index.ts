@@ -116,54 +116,58 @@ yargs(hideBin(process.argv))
         demandOption: true,
         default: "admin"
     })
-    .command("update <id>", "Update bridge with the given id", (yargs) => {
+    .command("bridge", "Bridge commands", (yargs) => {
         return yargs
+        .command("update <id>", "Update bridge with the given id", (yargs) => {
+            return yargs
+                .positional("id", {
+                    type: "string",
+                    demandOption: true,
+                })
+                .option("protocol", {
+                    type: "string",
+                    choices: ["matter", "homekit"]
+                })
+                .option("zigbee-config", {
+                    type: "string",
+                    description: "A Path to JSON file containing the zigbee2mqtt plugin config.",
+                })
+                .check((argv) => {
+                    if (!argv["protocol"] && !argv["zigbee-config"]) {
+                        throw(new Error("Provide at least one option"))
+                    }
+                    return true;
+                })
+        }, (argv) => {
+            if (argv.zigbeeConfig) {
+                try {
+                    const buffer = readFileSync(argv.zigbeeConfig)
+                    updateBridgeZigbeeConfig(argv.id, JSON.parse(buffer.toString()))
+                } catch (_) {
+                    throw(new Error("Can't read JSON at the given path."))
+                }
+            }
+
+            if (argv.protocol) updateBridge(argv.id, argv.protocol);
+        })
+        .command("get [id]", "Get bridges", (yargs) => {
+            return yargs
+            .positional("id", {
+                type: "string"
+            })
+        }, (argv) => {
+            getBridge(argv.id);
+        })
+        .command("get-zigbee <id>", "Get zigbee config of bridges.", (yargs) => {
+            return yargs
             .positional("id", {
                 type: "string",
-                demandOption: true,
+                demandOption: true
             })
-            .option("protocol", {
-                type: "string",
-                choices: ["matter", "homekit"]
-            })
-            .option("zigbee-config", {
-                type: "string",
-                description: "A Path to JSON file containing the zigbee2mqtt plugin config.",
-            })
-            .check((argv) => {
-                if (!argv["protocol"] && !argv["zigbee-config"]) {
-                    throw(new Error("Provide at least one option"))
-                }
-                return true;
-            })
-    }, (argv) => {
-        if (argv.zigbeeConfig) {
-            try {
-                const buffer = readFileSync(argv.zigbeeConfig)
-                updateBridgeZigbeeConfig(argv.id, JSON.parse(buffer.toString()))
-            } catch (_) {
-                throw(new Error("Can't read JSON at the given path."))
-            }
-        }
-
-        if (argv.protocol) updateBridge(argv.id, argv.protocol);
-    })
-    .command("get [id]", "Get bridges", (yargs) => {
-        return yargs
-        .positional("id", {
-            type: "string"
+        }, (argv) => {
+            getBridgeZigbeeConfig(argv.id);
         })
-    }, (argv) => {
-        getBridge(argv.id);
-    })
-    .command("get-zigbee <id>", "Get zigbee config of bridges.", (yargs) => {
-        return yargs
-        .positional("id", {
-            type: "string",
-            demandOption: true
-        })
-    }, (argv) => {
-        getBridgeZigbeeConfig(argv.id);
+        .demandCommand(1);
     })
     .command("zigbee", "Zigbee Commands", (yargs) => {
         return yargs
@@ -211,6 +215,39 @@ yargs(hideBin(process.argv))
         }, (argv) => {
             hoobs.sdk.zigbee.setZigbeeTransmitPower(argv.power)
             .then(() => console.log("transmit power set"))
+            .catch((rejection) => console.log(rejection));
+        })
+        .demandCommand(1)
+    })
+    .command("bluetooth", "Bluetooth commands", (yargs) => {
+        return yargs
+        .command("status", "Bluetooth status", {}, () => {
+            hoobs.sdk.blueZ.status()
+            .then((status) => console.log(status))
+            .catch((rejection) => console.log(rejection));
+        })
+        .command("start", "Start bluetooth service", {}, () => {
+            hoobs.sdk.blueZ.start()
+            .then(() => console.log("Started"))
+            .catch((rejection) => console.log(rejection));
+        })
+        .command("stop", "Stop bluetooth service", {}, () => {
+            hoobs.sdk.blueZ.stop()
+            .then(() => console.log("Stopped"))
+            .catch((rejection) => console.log(rejection));
+        })
+        .command("restart", "Restart bluetooth service", {}, () => {
+            hoobs.sdk.blueZ.stop()
+            .then(() => console.log("Restarted"))
+            .catch((rejection) => console.log(rejection));
+        })
+        .demandCommand(1)
+    })
+    .command("network", "Network commands", (yargs) => {
+        return yargs
+        .command("interfaces", "Returns the status of network interfaces", {}, () => {
+            hoobs.sdk.network.interfaces()
+            .then((interfaces) => console.log(JSON.stringify(interfaces, null, 4)))
             .catch((rejection) => console.log(rejection));
         })
         .demandCommand(1)
