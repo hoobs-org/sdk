@@ -26,6 +26,13 @@ export default {
         return response.data || {};
     },
 
+    // https://github.com/systemd/systemd/blob/main/src/network/networkd-json.c
+    async interfaces(): Promise<{ [key: string]: any }[]> {
+        const response = <any>(await Request.get(`${Config.host.get()}/network/interfaces`, { headers: { authorization: Config.token.authorization } }));
+
+        return response.data || {};
+    },
+
     async up(iface: string): Promise<void> {
         await Request.post(`${Config.host.get()}/network/${iface}/up`, undefined, { headers: { authorization: Config.token.authorization } });
     },
