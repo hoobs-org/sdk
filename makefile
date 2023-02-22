@@ -18,7 +18,7 @@ paths:
 publish: lint paths
 	node_modules/.bin/tsc
 	node_modules/.bin/webpack --mode=production
-	../node_modules/.bin/yarn publish --access public --new-version $(shell jq < package.json '.version')
+	yarn publish --access public --new-version $(shell jq < package.json '.version')
 
 clean:
 	rm -fR lib
