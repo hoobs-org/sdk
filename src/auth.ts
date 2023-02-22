@@ -37,10 +37,11 @@ export default {
     },
 
     async login(username: string, password: string, remember?: boolean): Promise<boolean> {
-        const { token } = <any>(await Request.post(`${Config.host.get()}/auth/logon`, { username, password, remember })).data;
+        const { token, zigbeeToMqttToken } = <any>(await Request.post(`${Config.host.get()}/auth/logon`, { username, password, remember })).data;
 
         if (token) {
             Config.token.authorization = token;
+            Config.zigbeeToMqttToken = zigbeeToMqttToken;
 
             return true;
         }

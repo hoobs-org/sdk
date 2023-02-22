@@ -29,6 +29,8 @@ let GET_HOST: string = API_URL;
 let RESTRICT_BRIDGE: string | undefined;
 let RESTRICT_PLUGIN: string | undefined;
 
+let zigbeeToMqttToken: string | undefined;
+
 interface SetupToken {
     token: string;
     host: string;
@@ -78,6 +80,14 @@ export default {
         set(callback: (token: string) => void) {
             SET_TOKEN = callback;
         },
+    },
+
+    get zigbeeToMqttToken(): string | undefined {
+        return zigbeeToMqttToken;
+    },
+
+    set zigbeeToMqttToken(token: string | undefined) {
+        zigbeeToMqttToken = token;
     },
 
     host: {
