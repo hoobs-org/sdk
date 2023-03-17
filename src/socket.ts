@@ -40,10 +40,12 @@ class Socket {
 
     connect(host?: string, port?:number) {
         if (this.io) this.io.close();
-
-        this.io = io(host ? `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}` : SOCKET_URL);
+        if (host?.startsWith("http")) {
+            this.io = io(host);
+        } else {
+            this.io = io(host ? `http://${host}:${port && port >= 1 && port <= 65535 ? port : 80}` : SOCKET_URL);
+        }
         this.io.removeAllListeners();
-
         for (let i = 0; i < this.events.length; i += 1) {
             this.io.on(this.events[i].event, this.events[i].listner);
         }
