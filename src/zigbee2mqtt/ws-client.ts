@@ -1,6 +1,5 @@
 import ReconnectingWebSocket from "reconnecting-websocket";
 import keyBy from "lodash/keyBy";
-import WebSocket from "ws";
 import { CloseEvent } from "reconnecting-websocket/dist/events";
 import {
     TouchLinkDevice, Device, IEEEEAddress, GraphI,
