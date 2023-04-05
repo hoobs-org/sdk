@@ -14,13 +14,17 @@ hoobs.sdk.config.token.set((aToken: string) => { token = aToken })
 
 const loginMiddleware = async (argv) => {
     hoobs.sdk.config.host.set(argv.host, argv.port);
-    await hoobs.sdk.auth.login(argv.username, argv.password, true).then((loggedIn) => {
-        if (!loggedIn) {
-            throw new Error("Login failed check the following arguments: host, port, username, password");
-        }
-        return {}
-    })
-    .catch(error => console.error(error)) 
+    if (argv.username && argv.password) {
+        await hoobs.sdk.auth.login(argv.username, argv.password, true).then((loggedIn) => {
+            if (!loggedIn) {
+                throw new Error("Login failed check the following arguments: host, port, username, password");
+            }
+            return {}
+        })
+        .catch(error => console.error(error))
+    } else {
+        console.log("Username and password not provided.");
+    }
 }
 
 const updateBridge = (bridgeId: string, protocol: string) => {
@@ -108,13 +112,9 @@ yargs(hideBin(process.argv))
     })
     .option("username", {
         type: "string",
-        demandOption: true,
-        default: "admin"
     })
     .option("password", {
         type: "string",
-        demandOption: true,
-        default: "admin"
     })
     .command("bridge", "Bridge commands", (yargs) => {
         return yargs
