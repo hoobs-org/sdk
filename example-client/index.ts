@@ -8,6 +8,9 @@ import { readFileSync } from "fs";
 import { ZigbeeToMQTTConfig } from "../lib/bridge";
 import { DeviceObserver } from "../lib/zigbee2mqtt/ws-client";
 
+import WebSocket from "ws";
+global.WebSocket = WebSocket as any;
+
 let token: string = ""
 hoobs.sdk.config.token.get(() => { return token })
 hoobs.sdk.config.token.set((aToken: string) => { token = aToken })

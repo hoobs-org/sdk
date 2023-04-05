@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@hoobs/sdk": "link:..",
+    "ws": "^8.13.0",
     "yargs": "^17.6.2"
   },
   "devDependencies": {
