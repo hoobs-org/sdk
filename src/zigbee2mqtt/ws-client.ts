@@ -2,10 +2,10 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 import keyBy from "lodash/keyBy";
 import { CloseEvent } from "reconnecting-websocket/dist/events";
 import {
-    TouchLinkDevice, Device, IEEEEAddress, GraphI,
+    TouchLinkDevice, Device, IEEEEAddress,
 } from "./types";
 import {
-    sanitizeGraph, randomString, stringifyWithPreservingUndefinedAsNull,
+    randomString, stringifyWithPreservingUndefinedAsNull,
 } from "./utils";
 import config from "../config";
 
@@ -18,16 +18,11 @@ interface Message {
 
 export type Devices = Record<IEEEEAddress, Device>;
 
-interface ResponseWithStatus {
+export interface ResponseWithStatus {
     status: "ok" | "error";
     data: unknown;
     error?: string;
     transaction?: string;
-}
-interface TouchlinkScanResponse extends ResponseWithStatus {
-    data: {
-        found: TouchLinkDevice[];
-    };
 }
 interface Callable {
     (reason?: any): void;
@@ -53,60 +48,7 @@ class Api {
         this.transactionRndPrefix = randomString(5);
     }
 
-    start = (pairingTime: number): Promise<void> => this.send("bridge/request/permit_join", { value: true, time: pairingTime });
-
-    stop = (): Promise<void> => this.send("bridge/request/permit_join", { value: false });
-
-    subscribeToDevices = (deviceObserver: DeviceObserver): void => {
-        this.deviceObservers.add(deviceObserver);
-        if (!this.socket || this.socket?.readyState === this.socket?.CLOSED) {
-            this.connect();
-        } else {
-            this.socket?.reconnect();
-        }
-    };
-
-    unsubscribeFromDevices = (deviceObserver: DeviceObserver) => {
-        this.deviceObservers.delete(deviceObserver);
-        this.closeSocketIfUnused();
-    };
-
-    removeDevice = (
-        dev: string,
-        force: boolean,
-        block: boolean,
-    ): Promise<void> => this.send("bridge/request/device/remove", { id: dev, force, block });
-
-    otaUpdate = (deviceId: string): Promise<void> => this.send("bridge/request/device/ota_update/update", { id: deviceId });
-
-    otaCheckDevice = (deviceName: string): Promise<void> => this.send("bridge/request/device/ota_update/check", { id: deviceName });
-
-    touchlinkScan = (): Promise<TouchLinkDevice[]> => new Promise((resolve, reject) => {
-        this.send("bridge/request/touchlink/scan")
-            .then((data) => {
-                const response = data as unknown as TouchlinkScanResponse;
-                resolve(response.data.found);
-            })
-            .catch(reject);
-    });
-
-    touchlinkIdentify = (device: TouchLinkDevice): Promise<void> => this.send("bridge/request/touchlink/identify", device as unknown as Record<string, unknown>);
-
-    touchlinkReset = (device: TouchLinkDevice): Promise<void> => this.send("bridge/request/touchlink/factory_reset", device as unknown as Record<string, unknown>);
-
-    requestNetworkMap = (): Promise<GraphI> => new Promise((resolve, reject) => {
-        this.send("bridge/request/networkmap", { type: "raw", routes: false })
-            .then((data) => {
-                resolve(sanitizeGraph((data as { value: unknown }).value as GraphI));
-            })
-            .catch(reject);
-    });
-
-    setZigbeeChannel = (channel: number): Promise<void> => this.send("bridge/request/options", { options: { advanced: { channel } } });
-
-    setZigbeeTransmitPower = (transmitPower: number): Promise<void> => this.send("bridge/request/options", { options: { advanced: { transmit_power: transmitPower } } });
-
-    private send = (topic: string, payload: Record<string, unknown> = {}, shouldTimeout = true): Promise<any> => {
+    send = (topic: string, payload: Record<string, unknown> = {}, shouldTimeout = true): Promise<any> => {
         if (!this.socket || this.socket?.readyState === this.socket?.CLOSED) {
             this.connect();
         }
@@ -172,7 +114,7 @@ class Api {
         }
     }
 
-    private closeSocketIfUnused(): void {
+    closeSocketIfUnused(): void {
         if (this.requests.size === 0 && this.deviceObservers.size === 0) {
             this.socket?.close();
         }
