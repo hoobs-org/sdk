@@ -1,4 +1,4 @@
-import api, { DeviceObserver, ResponseWithStatus } from "./zigbee2mqtt/ws-client";
+import api, { DeviceObserver, DeviceStateObserver, ResponseWithStatus } from "./zigbee2mqtt/ws-client";
 import Request from "./request";
 import Config from "./config";
 import { GraphI, TouchLinkDevice } from "./zigbee2mqtt/types";
@@ -24,15 +24,21 @@ export const Zigbee = {
 
     subscribeToDevices: (deviceObserver: DeviceObserver): void => {
         api.deviceObservers.add(deviceObserver);
-        if (!api.socket || api.socket?.readyState === api.socket?.CLOSED) {
-            api.connect();
-        } else {
-            api.socket?.reconnect();
-        }
+        api.onObserverAttached();
     },
 
     unsubscribeFromDevices: (deviceObserver: DeviceObserver) => {
         api.deviceObservers.delete(deviceObserver);
+        api.closeSocketIfUnused();
+    },
+
+    subscribeToDeviceStates: (deviceStateObserver: DeviceStateObserver): void => {
+        api.deviceStateObservers.add(deviceStateObserver);
+        api.onObserverAttached();
+    },
+
+    unsubscribeFromDeviceStates: (deviceStateObserver: DeviceStateObserver) => {
+        api.deviceStateObservers.delete(deviceStateObserver);
         api.closeSocketIfUnused();
     },
 

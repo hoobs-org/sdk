@@ -1,15 +1,19 @@
+/* eslint-disable max-classes-per-file */
 import ReconnectingWebSocket from "reconnecting-websocket";
 import keyBy from "lodash/keyBy";
 import { CloseEvent } from "reconnecting-websocket/dist/events";
+import { Device, IEEEEAddress } from "./types";
 import {
-    TouchLinkDevice, Device, IEEEEAddress,
-} from "./types";
-import {
+    debounceArgs,
     randomString, stringifyWithPreservingUndefinedAsNull,
 } from "./utils";
 import config from "../config";
 
 const UNAUTHORIZED_ERROR_CODE = 4401;
+
+const AVAILABILITY_FEATURE_TOPIC_ENDING = "/availability";
+
+const apiDebounceDelay = 250;
 
 interface Message {
     topic: string;
@@ -17,6 +21,10 @@ interface Message {
 }
 
 export type Devices = Record<IEEEEAddress, Device>;
+
+export type DeviceState = Record<string, unknown>;
+
+export type DeviceStates = Record<string, DeviceState>;
 
 export interface ResponseWithStatus {
     status: "ok" | "error";
@@ -28,10 +36,14 @@ interface Callable {
     (reason?: any): void;
 }
 
-export type DeviceObserver = {
-    onDevices: (devices: Devices) => void;
-    onClose: (reason: Error) => void;
+export type Observer<T> = {
+    onMessage(devices: T): void;
+
+    onClose(reason: Error): void;
 };
+
+export type DeviceObserver = Observer<Devices>;
+export type DeviceStateObserver = Observer<DeviceStates>;
 
 class Api {
     socket?: ReconnectingWebSocket;
@@ -39,6 +51,8 @@ class Api {
     requests: Map<string, [Callable, Callable, NodeJS.Timeout | null]> = new Map();
 
     deviceObservers: Set<DeviceObserver> = new Set();
+
+    deviceStateObservers: Set<DeviceStateObserver> = new Set();
 
     transactionNumber = 1;
 
@@ -87,16 +101,37 @@ class Api {
         this.socket.addEventListener("close", this.onClose);
     }
 
+    onObserverAttached() {
+        if (!this.socket || this.socket?.readyState === this.socket?.CLOSED) {
+            this.connect();
+        } else {
+            this.socket?.reconnect();
+        }
+    }
+
     private processBridgeMessage = (data: Message): void => {
         if (data.topic === "bridge/devices" && this.deviceObservers.size !== 0) {
             const devices = keyBy(data.payload as unknown as Device[], "ieee_address");
             this.deviceObservers.forEach((observer) => {
-                observer.onDevices(devices);
+                observer.onMessage(devices);
             });
         } else if (data.topic.startsWith("bridge/response/")) {
             this.resolvePromises(data.payload as unknown as ResponseWithStatus);
         }
     };
+
+    private processDeviceStateMessage = debounceArgs((messages: Message[]): void => {
+        if (this.deviceStateObservers.size === 0) {
+            return;
+        }
+        let deviceStates: Record<string, DeviceState>;
+        messages.forEach((message) => {
+            deviceStates[message.topic] = message.payload as DeviceState;
+        });
+        this.deviceStateObservers.forEach((observer) => {
+            observer.onMessage(deviceStates);
+        });
+    }, { trailing: true, maxWait: apiDebounceDelay }) as (data: Message) => void;
 
     private resolvePromises(message: ResponseWithStatus): void {
         const { transaction, status, data } = message;
@@ -115,7 +150,7 @@ class Api {
     }
 
     closeSocketIfUnused(): void {
-        if (this.requests.size === 0 && this.deviceObservers.size === 0) {
+        if (this.requests.size === 0 && this.deviceObservers.size === 0 && this.deviceStateObservers.size === 0) {
             this.socket?.close();
         }
     }
@@ -126,6 +161,8 @@ class Api {
             data = JSON.parse(event.data) as Message;
             if (data.topic.startsWith("bridge/")) {
                 this.processBridgeMessage(data);
+            } else if (!data.topic.endsWith(AVAILABILITY_FEATURE_TOPIC_ENDING)) {
+                this.processDeviceStateMessage(data);
             }
         } catch (e) {
             console.error(event.data);
@@ -142,6 +179,9 @@ class Api {
         const error = new Error(errorString);
 
         this.deviceObservers.forEach((observer) => {
+            observer.onClose(error);
+        });
+        this.deviceStateObservers.forEach((observer) => {
             observer.onClose(error);
         });
         this.requests.forEach(([, reject, timeout]) => {
