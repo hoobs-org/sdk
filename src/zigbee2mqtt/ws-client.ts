@@ -41,7 +41,7 @@ export type DeviceObserver = {
 class Api {
     socket?: ReconnectingWebSocket;
 
-    requests: Map<string, [Callable, Callable, NodeJS.Timeout]> = new Map<string, [Callable, Callable, NodeJS.Timeout]>();
+    requests: Map<string, [Callable, Callable, NodeJS.Timeout | null]> = new Map();
 
     deviceObservers: Set<DeviceObserver> = new Set();
 
@@ -71,9 +71,17 @@ class Api {
         this.closeSocketIfUnused();
     };
 
+    removeDevice = (
+        dev: string,
+        force: boolean,
+        block: boolean,
+    ): Promise<void> => this.send("bridge/request/device/remove", { id: dev, force, block });
+
     otaUpdate = (deviceId: string): Promise<void> => this.send("bridge/request/device/ota_update/update", { id: deviceId });
 
-    scanTouchLink = (): Promise<TouchLinkDevice[]> => new Promise((resolve, reject) => {
+    otaCheckDevice = (deviceName: string): Promise<void> => this.send("bridge/request/device/ota_update/check", { id: deviceName });
+
+    touchlinkScan = (): Promise<TouchLinkDevice[]> => new Promise((resolve, reject) => {
         this.send("bridge/request/touchlink/scan")
             .then((data) => {
                 const response = data as unknown as TouchlinkScanResponse;
@@ -81,6 +89,10 @@ class Api {
             })
             .catch(reject);
     });
+
+    touchlinkIdentify = (device: TouchLinkDevice): Promise<void> => this.send("bridge/request/touchlink/identify", device as unknown as Record<string, unknown>);
+
+    touchlinkReset = (device: TouchLinkDevice): Promise<void> => this.send("bridge/request/touchlink/factory_reset", device as unknown as Record<string, unknown>);
 
     requestNetworkMap = (): Promise<GraphI> => new Promise((resolve, reject) => {
         this.send("bridge/request/networkmap", { type: "raw", routes: false })
@@ -94,7 +106,7 @@ class Api {
 
     setZigbeeTransmitPower = (transmitPower: number): Promise<void> => this.send("bridge/request/options", { options: { advanced: { transmit_power: transmitPower } } });
 
-    private send = (topic: string, payload: Record<string, unknown> = {}): Promise<any> => {
+    private send = (topic: string, payload: Record<string, unknown> = {}, shouldTimeout = true): Promise<any> => {
         if (!this.socket || this.socket?.readyState === this.socket?.CLOSED) {
             this.connect();
         }
@@ -102,13 +114,16 @@ class Api {
         if (topic.startsWith("bridge/request/")) {
             const transaction = `${this.transactionRndPrefix}-${this.transactionNumber += 1}`;
             const promise = new Promise<void>((resolve, reject) => {
-                const timeout = setTimeout(() => {
-                    if (this.requests.has(transaction)) {
-                        this.socket?.close();
-                        this.requests.delete(transaction);
-                        reject(new Error("request timed out"));
-                    }
-                }, 5000);
+                let timeout = null;
+                if (shouldTimeout) {
+                    timeout = setTimeout(() => {
+                        if (this.requests.has(transaction)) {
+                            this.socket?.close();
+                            this.requests.delete(transaction);
+                            reject(new Error("request timed out"));
+                        }
+                    }, 5000);
+                }
                 this.requests.set(transaction, [resolve, reject, timeout]);
             });
             this.socket?.send(stringifyWithPreservingUndefinedAsNull({ topic, payload: { ...payload, transaction } }));
@@ -188,7 +203,9 @@ class Api {
             observer.onClose(error);
         });
         this.requests.forEach(([, reject, timeout]) => {
-            clearTimeout(timeout);
+            if (timeout) {
+                clearTimeout(timeout);
+            }
             reject(error);
         });
 
