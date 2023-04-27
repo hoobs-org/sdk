@@ -47,7 +47,7 @@ export const Zigbee = {
     otaCheckDevice: (deviceName: string): Promise<void> => api.send("bridge/request/device/ota_update/check", { id: deviceName }),
 
     touchlinkScan: (): Promise<TouchLinkDevice[]> => new Promise((resolve, reject) => {
-        api.send("bridge/request/touchlink/scan")
+        api.send("bridge/request/touchlink/scan", undefined, false)
             .then((data) => {
                 const response = data as unknown as TouchlinkScanResponse;
                 resolve(response.data.found);
