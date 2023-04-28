@@ -11,10 +11,8 @@ export interface ZigbeeStatusRecord {
     message: string;
 }
 
-interface TouchlinkScanResponse extends ResponseWithStatus {
-    data: {
-        found: TouchLinkDevice[];
-    };
+interface TouchlinkScanData {
+    found: TouchLinkDevice[];
 }
 
 export const Zigbee = {
@@ -55,8 +53,8 @@ export const Zigbee = {
     touchlinkScan: (): Promise<TouchLinkDevice[]> => new Promise((resolve, reject) => {
         api.send("bridge/request/touchlink/scan", undefined, false)
             .then((data) => {
-                const response = data as unknown as TouchlinkScanResponse;
-                resolve(response.data.found);
+                const response = data as unknown as TouchlinkScanData;
+                resolve(response?.found ?? []);
             })
             .catch(reject);
     }),
