@@ -121,8 +121,8 @@ export const Themes = {
         return results;
     },
 
-    async save(name: string, theme: Theme) {
-        (await Request.post(`${Config.host.get()}/theme/${name}`, theme, { headers: { authorization: Config.token.authorization } }));
+    async save(name: string, theme: Theme): Promise<Record<string, any>> {
+        return <Record<string, any>>(await Request.post(`${Config.host.get()}/theme/${name}`, theme, { headers: { authorization: Config.token.authorization } })).data;
     },
 
     async backdrop(image: Blob): Promise<string> {

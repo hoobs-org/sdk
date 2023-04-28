@@ -87,7 +87,7 @@ export const Bridges = {
         return false;
     },
 
-    async import(file: Blob, name: string, port: number, pin?: string, username?: string, advertiser?: string, protocol?: string): Promise<void> {
+    async import(file: Blob, name: string, port: number, pin?: string, username?: string, advertiser?: string, protocol?: string): Promise<Record<string, any>> {
         const form = new FormData();
 
         form.append("file", file);
@@ -99,6 +99,6 @@ export const Bridges = {
         if (advertiser && advertiser !== "") form.append("advertiser", advertiser);
         if (protocol && protocol !== "") form.append("protocol", protocol);
 
-        (await Request.post(`${Config.host.get()}/bridges/import`, form, { headers: { authorization: Config.token.authorization } }));
+        return <Record<string, any>>(await Request.post(`${Config.host.get()}/bridges/import`, form, { headers: { authorization: Config.token.authorization } })).data;
     },
 };

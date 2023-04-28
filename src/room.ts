@@ -22,9 +22,9 @@ import Config from "./config";
 export default async function Room(id: string): Promise<{ [key: string]: any }> {
     const results = <any>(await Request.get(`${Config.host.get()}/room/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
-    results.set = async (characteristic: string, data: any): Promise<void> => {
-        (await Request.put(`${Config.host.get()}/room/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } }));
-    };
+    results.set = async (characteristic: string, data: any): Promise<Record<string, any>> => <Record<string, any>>(
+        await Request.put(`${Config.host.get()}/room/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } })
+    ).data;
 
     results.remove = async (): Promise<boolean> => {
         const result = <any>(await Request.delete(`${Config.host.get()}/room/${id}`, { headers: { authorization: Config.token.authorization } })).data;

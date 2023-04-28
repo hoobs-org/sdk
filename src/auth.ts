@@ -32,8 +32,10 @@ export default {
         return valid;
     },
 
-    async disable(): Promise<void> {
-        await Request.post(`${Config.host.get()}/auth/disable`);
+    async disable(): Promise<string> {
+        const { state } = <any>(await Request.post(`${Config.host.get()}/auth/disable`)).data;
+
+        return state;
     },
 
     async login(username: string, password: string, remember?: boolean): Promise<boolean> {
@@ -49,10 +51,12 @@ export default {
         return false;
     },
 
-    async logout(): Promise<void> {
-        await Request.get(`${Config.host.get()}/auth/logout`, { headers: { authorization: Config.token.authorization } });
+    async logout(): Promise<boolean> {
+        const { success } = <any>(await Request.get(`${Config.host.get()}/auth/logout`, { headers: { authorization: Config.token.authorization } })).data;
 
         Config.token.authorization = "";
+
+        return success;
     },
 
     get terminal() {

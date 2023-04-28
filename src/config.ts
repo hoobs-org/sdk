@@ -139,7 +139,7 @@ export default {
         return results;
     },
 
-    update: async (data: { [key: string]: any }): Promise<void> => {
+    update: async (data: { [key: string]: any }): Promise<Record<string, any>> => {
         if (RESTRICT_BRIDGE && RESTRICT_PLUGIN) {
             const config = <any>(await Request.get(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
             const index = ((config || {}).platforms || []).findIndex((item: { [key: string]: any }) => ((item || {}).plugin_map || {}).plugin_name === RESTRICT_PLUGIN);
@@ -152,15 +152,13 @@ export default {
                 config.platforms[index] = data;
             }
 
-            (await Request.post(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, config, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
-            return;
+            return <Record<string, any>>(await Request.post(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, config, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
         }
 
         if (RESTRICT_BRIDGE) {
-            (await Request.post(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
-            return;
+            return <Record<string, any>>(await Request.post(`${GET_HOST}/api/config/${RESTRICT_BRIDGE}`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
         }
 
-        (await Request.post(`${GET_HOST}/api/config`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } }));
+        return <Record<string, any>>(await Request.post(`${GET_HOST}/api/config`, data, { headers: { authorization: (typeof GET_TOKEN === "function") ? GET_TOKEN() : "" } })).data;
     },
 };

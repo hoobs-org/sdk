@@ -19,6 +19,16 @@
 import Request from "./request";
 import Config from "./config";
 
+type EthernetConfig = {
+    link: boolean;
+    ipv4: string;
+    ipv6: string;
+    netmask: string;
+    gateway: string;
+    speed: number;
+    dns: string[];
+};
+
 export default async function System(): Promise<{ [key: string]: any }> {
     const results = <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/system`, { headers: { authorization: Config.token.authorization } })).data || {};
 
@@ -46,33 +56,21 @@ export default async function System(): Promise<{ [key: string]: any }> {
         return status;
     };
 
-    results.upgrade = async (): Promise<void> => {
-        await Request.post(`${Config.host.get()}/system/upgrade`, null, { headers: { authorization: Config.token.authorization } });
-    };
+    results.upgrade = async (): Promise<Record<string, any>> => <Record<string, any>>(await Request.post(`${Config.host.get()}/system/upgrade`, null, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.reboot = async (): Promise<void> => {
-        await Request.put(`${Config.host.get()}/system/reboot`, null, { headers: { authorization: Config.token.authorization } });
-    };
+    results.reboot = async (): Promise<Record<string, any>> => <Record<string, any>>(await Request.put(`${Config.host.get()}/system/reboot`, null, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.shutdown = async (): Promise<void> => {
-        await Request.put(`${Config.host.get()}/system/shutdown`, null, { headers: { authorization: Config.token.authorization } });
-    };
+    results.shutdown = async (): Promise<Record<string, any>> => <Record<string, any>>(await Request.put(`${Config.host.get()}/system/shutdown`, null, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.reset = async (): Promise<void> => {
-        await Request.put(`${Config.host.get()}/system/reset`, null, { headers: { authorization: Config.token.authorization } });
-    };
+    results.reset = async (): Promise<Record<string, any>> => <Record<string, any>>(await Request.put(`${Config.host.get()}/system/reset`, null, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.purge = async (): Promise<void> => {
-        await Request.delete(`${Config.host.get()}/cache/purge`, { headers: { authorization: Config.token.authorization } });
-    };
+    results.purge = async (): Promise<Record<string, any>> => <Record<string, any>>(await Request.delete(`${Config.host.get()}/cache/purge`, { headers: { authorization: Config.token.authorization } })).data;
 
     results.firmware = async (): Promise<{ [key: string]: any }> => (await <{ [key: string]: any }>(Request.get(
         `${Config.host.get()}/system/firmware`, { headers: { authorization: Config.token.authorization } },
     ))).data || {};
 
-    results.ethernet = async (): Promise<void> => {
-        await Request.get(`${Config.host.get()}/system/ethernet`, { headers: { authorization: Config.token.authorization } });
-    };
+    results.ethernet = async (): Promise<EthernetConfig> => <EthernetConfig>(await Request.get(`${Config.host.get()}/system/ethernet`, { headers: { authorization: Config.token.authorization } })).data;
 
     return results;
 }
