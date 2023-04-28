@@ -94,7 +94,7 @@ const getBridgeZigbeeConfig = (bridgeId: string) => {
 } 
 
 const deviceObserver: DeviceObserver = {
-    onDevices(devices) {
+    onMessage(devices) {
         console.log("new devices:\n", devices);
     },
     onClose(reason) {
@@ -187,22 +187,22 @@ yargs(hideBin(process.argv))
             .catch((rejection) => console.log(rejection));
         })
         .command("get-devices", "get zigbee devices", {}, () => {
-            hoobs.sdk.zigbee.startObservingDevices(deviceObserver);
+            hoobs.sdk.zigbee.subscribeToDevices(deviceObserver);
         })
         .command("ota-update <device-id>", "ota update device", (yargs) => {
             return yargs.option("device-id", { type: "string", demandOption: true })
         }, (argv) => {
-            hoobs.sdk.zigbee.update(argv.deviceId)
+            hoobs.sdk.zigbee.otaUpdate(argv.deviceId)
             .then(() => console.log("update started"))
             .catch((rejection) => console.log(rejection));
         })
         .command("touchlink-scan", "scan for touchlink devices", {}, () => {
-            hoobs.sdk.zigbee.scanTouchlink()
+            hoobs.sdk.zigbee.touchlinkScan()
             .then((touchlinkDevices) => console.log(touchlinkDevices))
             .catch((rejection) => console.log(rejection));
         })
         .command("get-network-map", "get zigbee network map", {}, () => {
-            hoobs.sdk.zigbee.networkMap()
+            hoobs.sdk.zigbee.requestNetworkMap()
             .then((map) => console.log(map))
             .catch((rejection) => console.log(rejection));
         })
@@ -260,5 +260,5 @@ yargs(hideBin(process.argv))
     .parse();
 
 process.on('SIGINT', function() {
-    hoobs.sdk.zigbee.stopObservingDevices(deviceObserver);
+    hoobs.sdk.zigbee.unsubscribeFromDevices(deviceObserver);
 });
