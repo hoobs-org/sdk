@@ -18,7 +18,7 @@ interface TouchlinkScanResponse extends ResponseWithStatus {
 }
 
 export const Zigbee = {
-    start: (pairingTime: number): Promise<void> => api.send("bridge/request/permit_join", { value: true, time: pairingTime }),
+    start: (pairingTime = 254): Promise<void> => api.send("bridge/request/permit_join", { value: true, time: pairingTime }),
 
     stop: (): Promise<void> => api.send("bridge/request/permit_join", { value: false }),
 
