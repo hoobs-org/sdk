@@ -20,15 +20,15 @@ import Request from "./request";
 import Config from "./config";
 
 export default {
-    async file(file: string): Promise<void> {
-        await Request.get(`${Config.host.get()}/system/restore?filename=${encodeURIComponent(file)}`, { headers: { authorization: Config.token.authorization } });
+    async file(file: string): Promise<Record<string, any>> {
+        return <Record<string, any>>(await Request.get(`${Config.host.get()}/system/restore?filename=${encodeURIComponent(file)}`, { headers: { authorization: Config.token.authorization } })).data;
     },
 
-    async upload(file: Blob): Promise<void> {
+    async upload(file: Blob): Promise<Record<string, any>> {
         const form = new FormData();
 
         form.append("file", file);
 
-        (await Request.post(`${Config.host.get()}/system/restore`, form, { headers: { authorization: Config.token.authorization } }));
+        return <Record<string, any>>(await Request.post(`${Config.host.get()}/system/restore`, form, { headers: { authorization: Config.token.authorization } })).data;
     },
 };

@@ -108,15 +108,15 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
     results.config = {
         get: async (): Promise<{ [key: string]: any }> => <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/config/${id}`, { headers: { authorization: Config.token.authorization } })).data,
 
-        update: async (data: { [key: string]: any }): Promise<void> => {
-            (await Request.post(`${Config.host.get()}/config/${id}`, data, { headers: { authorization: Config.token.authorization } }));
-        },
+        update: async (data: { [key: string]: any }): Promise<Record<string, any>> => <Record<string, any>>(
+            await Request.post(`${Config.host.get()}/config/${id}`, data, { headers: { authorization: Config.token.authorization } })
+        ).data,
 
         getZigbee: async (): Promise<ZigbeeToMQTTConfig> => <ZigbeeToMQTTConfig>(await Request.get(`${Config.host.get()}/config/zigbee/${id}`, { headers: { authorization: Config.token.authorization } })).data,
 
-        updateZigbee: async (data: ZigbeeToMQTTConfig): Promise<void> => {
-            (await Request.post(`${Config.host.get()}/config/zigbee/${id}`, data, { headers: { authorization: Config.token.authorization } }));
-        },
+        updateZigbee: async (data: ZigbeeToMQTTConfig): Promise<Record<string, any>> => <Record<string, any>>(
+            await Request.post(`${Config.host.get()}/config/zigbee/${id}`, data, { headers: { authorization: Config.token.authorization } })
+        ).data,
     };
 
     results.plugins = {
@@ -147,8 +147,8 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         },
     };
 
-    results.update = async (display: string, autostart: number, pin?: string, username?: string, advertiser?: string, debugging?: boolean, protocol?: string): Promise<void> => {
-        (await Request.post(`${Config.host.get()}/bridge/${id}`, {
+    results.update = async (display: string, autostart: number, pin?: string, username?: string, advertiser?: string, debugging?: boolean, protocol?: string): Promise<Record<string, any>> => <Record<string, any>>(
+        await Request.post(`${Config.host.get()}/bridge/${id}`, {
             display,
             autostart,
             pin,
@@ -156,8 +156,8 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
             advertiser,
             debugging,
             protocol,
-        }, { headers: { authorization: Config.token.authorization } }));
-    };
+        }, { headers: { authorization: Config.token.authorization } })
+    ).data;
 
     results.ports = async (start: number, end: number): Promise<boolean> => {
         if (!start || Number.isNaN(start)) return false;
@@ -181,26 +181,21 @@ export default async function Bridge(name: string): Promise<BridgeRecord | undef
         return response.data || [];
     };
 
-    results.start = async (): Promise<void> => {
-        (await Request.post(`${Config.host.get()}/bridge/${id}/start`, null, { headers: { authorization: Config.token.authorization } }));
-    };
+    results.start = async (): Promise<Record<string, any>> => <Record<string, any>>(await Request.post(`${Config.host.get()}/bridge/${id}/start`, null, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.stop = async (): Promise<void> => {
-        (await Request.post(`${Config.host.get()}/bridge/${id}/stop`, null, { headers: { authorization: Config.token.authorization } }));
-    };
+    results.stop = async (): Promise<Record<string, any>> => <Record<string, any>>(await Request.post(`${Config.host.get()}/bridge/${id}/stop`, null, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.restart = async (): Promise<void> => {
-        (await Request.post(`${Config.host.get()}/bridge/${id}/restart`, null, { headers: { authorization: Config.token.authorization } }));
-    };
+    results.restart = async (): Promise<Record<string, any>> => <Record<string, any>>(
+        await Request.post(`${Config.host.get()}/bridge/${id}/restart`, null, { headers: { authorization: Config.token.authorization } })
+    ).data;
 
     results.cache = async (): Promise<{ [key: string]: any }> => <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/cache/${id}`, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.purge = async (uuid?: string): Promise<void> => {
+    results.purge = async (uuid?: string): Promise<Record<string, any>> => {
         if (uuid) {
-            (await Request.delete(`${Config.host.get()}/cache/${id}/purge/${uuid}`, { headers: { authorization: Config.token.authorization } }));
-        } else {
-            (await Request.delete(`${Config.host.get()}/cache/${id}/purge`, { headers: { authorization: Config.token.authorization } }));
+            return <Record<string, any>>(await Request.delete(`${Config.host.get()}/cache/${id}/purge/${uuid}`, { headers: { authorization: Config.token.authorization } })).data;
         }
+        return <Record<string, any>>(await Request.delete(`${Config.host.get()}/cache/${id}/purge`, { headers: { authorization: Config.token.authorization } })).data;
     };
 
     results.export = async (): Promise<string> => {

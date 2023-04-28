@@ -23,18 +23,15 @@ import { UserRecord } from "./users";
 export default async function User(id: number): Promise<UserRecord> {
     const results: UserRecord = <UserRecord>(await Request.get(`${Config.host.get()}/users/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
-    results.update = async (username: string, password: string, name?: string, permissions?: { [key: string]: boolean }): Promise<void> => {
-        (await Request.post(`${Config.host.get()}/users/${id}`, {
+    results.update = async (username: string, password: string, name?: string, permissions?: { [key: string]: boolean }): Promise<Record<string, any>> => <Record<string, any>>(
+        await Request.post(`${Config.host.get()}/users/${id}`, {
             name: name || username,
             username,
             password,
             permissions,
-        }, { headers: { authorization: Config.token.authorization } }));
-    };
+        }, { headers: { authorization: Config.token.authorization } })).data;
 
-    results.remove = async () => {
-        (await Request.delete(`${Config.host.get()}/users/${id}`, { headers: { authorization: Config.token.authorization } }));
-    };
+    results.remove = async () => <Record<string, any>>(await Request.delete(`${Config.host.get()}/users/${id}`, { headers: { authorization: Config.token.authorization } })).data;
 
     return results;
 }

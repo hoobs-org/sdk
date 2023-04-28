@@ -24,8 +24,8 @@ export interface UserRecord {
     name: string;
     permissions: { [key: string]: boolean };
     username: string;
-    update?: (username: string, password: string, name?: string, permissions?: { [key: string]: boolean }) => Promise<void>;
-    remove?: () => Promise<void>;
+    update?: (username: string, password: string, name?: string, permissions?: { [key: string]: boolean }) => Promise<Record<string, any>>;
+    remove?: () => Promise<Record<string, any>>;
 }
 
 export const Users = {

@@ -22,7 +22,7 @@ import Config from "./config";
 export default {
     get: async (): Promise<{ [key: string]: any }> => (<{ [key: string]: any }>(await Request.get(`${Config.host.get()}/system/hostname`, { headers: { authorization: Config.token.authorization } })).data).hostname,
 
-    update: async (hostname: string): Promise<void> => {
-        (await Request.post(`${Config.host.get()}/system/hostname`, { hostname }, { headers: { authorization: Config.token.authorization } }));
-    },
+    update: async (hostname: string): Promise<Record<string, any>> => (<Record<string, any>>(
+        await Request.post(`${Config.host.get()}/system/hostname`, { hostname }, { headers: { authorization: Config.token.authorization } })
+    ).data),
 };

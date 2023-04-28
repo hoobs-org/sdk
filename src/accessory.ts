@@ -22,9 +22,9 @@ import Config from "./config";
 export default async function Accessory(bridge: string, id: string): Promise<{ [key: string]: any }> {
     const results: { [key: string]: any } = <{ [key: string]: any }>(await Request.get(`${Config.host.get()}/accessory/${bridge}/${id}`, { headers: { authorization: Config.token.authorization } })).data || {};
 
-    results.set = async (characteristic: string, data: { [key: string]: any }): Promise<void> => {
-        (await Request.put(`${Config.host.get()}/accessory/${bridge}/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } }));
-    };
+    results.set = async (characteristic: string, data: { [key: string]: any }): Promise<{ [key: string]: any }> => <{ [key: string]: any }>(
+        await Request.put(`${Config.host.get()}/accessory/${bridge}/${id}/${characteristic}`, { value: data }, { headers: { authorization: Config.token.authorization } })
+    ).data || {};
 
     if (results.type === "camera") {
         if (results.supports_streaming) results.stream = () => `${Config.host.get()}/accessory/${bridge}/${id}/stream`;
