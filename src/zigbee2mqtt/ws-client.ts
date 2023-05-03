@@ -111,7 +111,7 @@ class Api {
         if (this.deviceStateObservers.size === 0) {
             return;
         }
-        let deviceStates: Record<string, DeviceState>;
+        const deviceStates: Record<string, DeviceState> = {};
         messages.forEach((message) => {
             deviceStates[message.topic] = message.payload as DeviceState;
         });
