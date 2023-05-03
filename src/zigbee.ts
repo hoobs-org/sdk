@@ -1,4 +1,4 @@
-import api, { DeviceObserver, DeviceStateObserver, ResponseWithStatus } from "./zigbee2mqtt/ws-client";
+import api, { DeviceObserver, DeviceStateObserver } from "./zigbee2mqtt/ws-client";
 import Request from "./request";
 import Config from "./config";
 import { GraphI, TouchLinkDevice } from "./zigbee2mqtt/types";
