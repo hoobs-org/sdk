@@ -127,7 +127,7 @@ class Api {
             if (status === "ok" || status === undefined) {
                 resolve(data);
             } else {
-                reject(data);
+                reject(message.error);
             }
             this.requests.delete(transaction);
 
