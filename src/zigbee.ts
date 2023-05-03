@@ -51,7 +51,7 @@ export const Zigbee = {
     otaCheckDevice: (deviceName: string): Promise<void> => api.send("bridge/request/device/ota_update/check", { id: deviceName }),
 
     touchlinkScan: (): Promise<TouchLinkDevice[]> => new Promise((resolve, reject) => {
-        api.send("bridge/request/touchlink/scan", undefined, false)
+        api.send("bridge/request/touchlink/scan", undefined)
             .then((data) => {
                 const response = data as unknown as TouchlinkScanData;
                 resolve(response?.found ?? []);
@@ -64,7 +64,7 @@ export const Zigbee = {
     touchlinkReset: (device: TouchLinkDevice): Promise<void> => api.send("bridge/request/touchlink/factory_reset", device as unknown as Record<string, unknown>),
 
     requestNetworkMap: (): Promise<GraphI> => new Promise((resolve, reject) => {
-        api.send("bridge/request/networkmap", { type: "raw", routes: false }, false)
+        api.send("bridge/request/networkmap", { type: "raw", routes: false })
             .then((data) => {
                 resolve(sanitizeGraph((data as { value: unknown }).value as GraphI));
             })

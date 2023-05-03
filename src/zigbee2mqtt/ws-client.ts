@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import ReconnectingWebSocket from "reconnecting-websocket";
 import keyBy from "lodash/keyBy";
 import { CloseEvent } from "reconnecting-websocket/dist/events";
@@ -48,7 +47,7 @@ export type DeviceStateObserver = Observer<DeviceStates>;
 class Api {
     socket?: ReconnectingWebSocket;
 
-    requests: Map<string, [Callable, Callable, NodeJS.Timeout | null]> = new Map();
+    requests: Map<string, [Callable, Callable]> = new Map();
 
     deviceObservers: Set<DeviceObserver> = new Set();
 
@@ -62,7 +61,7 @@ class Api {
         this.transactionRndPrefix = randomString(5);
     }
 
-    send = (topic: string, payload: Record<string, unknown> = {}, shouldTimeout = true): Promise<any> => {
+    send = (topic: string, payload: Record<string, unknown> = {}): Promise<any> => {
         if (!this.socket || this.socket?.readyState === this.socket?.CLOSED) {
             this.connect();
         }
@@ -70,17 +69,7 @@ class Api {
         if (topic.startsWith("bridge/request/")) {
             const transaction = `${this.transactionRndPrefix}-${this.transactionNumber += 1}`;
             const promise = new Promise<void>((resolve, reject) => {
-                let timeout = null;
-                if (shouldTimeout) {
-                    timeout = setTimeout(() => {
-                        if (this.requests.has(transaction)) {
-                            this.socket?.close();
-                            this.requests.delete(transaction);
-                            reject(new Error("request timed out"));
-                        }
-                    }, 5000);
-                }
-                this.requests.set(transaction, [resolve, reject, timeout]);
+                this.requests.set(transaction, [resolve, reject]);
             });
             this.socket?.send(stringifyWithPreservingUndefinedAsNull({ topic, payload: { ...payload, transaction } }));
             return promise;
@@ -104,8 +93,6 @@ class Api {
     onObserverAttached() {
         if (!this.socket || this.socket?.readyState === this.socket?.CLOSED) {
             this.connect();
-        } else {
-            this.socket?.reconnect();
         }
     }
 
@@ -136,8 +123,7 @@ class Api {
     private resolvePromises(message: ResponseWithStatus): void {
         const { transaction, status, data } = message;
         if (transaction !== undefined && this.requests.has(transaction)) {
-            const [resolve, reject, timeout] = this.requests.get(transaction) as [Callable, Callable, NodeJS.Timeout];
-            clearTimeout(timeout);
+            const [resolve, reject] = this.requests.get(transaction) as [Callable, Callable];
             if (status === "ok" || status === undefined) {
                 resolve(data);
             } else {
@@ -184,10 +170,7 @@ class Api {
         this.deviceStateObservers.forEach((observer) => {
             observer.onClose(error);
         });
-        this.requests.forEach(([, reject, timeout]) => {
-            if (timeout) {
-                clearTimeout(timeout);
-            }
+        this.requests.forEach(([, reject]) => {
             reject(error);
         });
 
